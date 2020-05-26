@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	var storage store.Store
+	var storage store.Storer
 	var respondentID string
 
 	app := &cli.App{

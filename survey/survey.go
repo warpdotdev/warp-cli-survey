@@ -25,7 +25,7 @@ var positives = []string{
 	"Thanks!",
 }
 
-func Start(storage store.Store, respondentId string) {
+func Start(storage store.Storer, respondentId string) {
 	fmt.Println("\n👋  Welcome to the Project Denver survey! 👋")
 	fmt.Println("⏲  This should take no more than 5-10 minutes. ⏲")
 	fmt.Println("If anything goes wrong, your survey id is", respondentId)

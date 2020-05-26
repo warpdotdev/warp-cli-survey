@@ -12,7 +12,7 @@ const surveyResponseEndpoint = "https://us-central1-denver-survey.cloudfunctions
 
 type webStore struct{}
 
-func NewWebStore() Store {
+func NewWebStore() Storer {
 	return webStore{}
 }
 

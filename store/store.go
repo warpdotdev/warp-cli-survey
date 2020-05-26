@@ -6,8 +6,8 @@ import (
 	"github.com/zachlloyd/denver-survey-client/shell"
 )
 
-// Store is an interface for recording responses
-type Store interface {
+// Storer is an interface for recording responses
+type Storer interface {
 	Write(response Response)
 }
 
