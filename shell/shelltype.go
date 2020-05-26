@@ -4,16 +4,25 @@ import (
 	"strings"
 )
 
-type ShellType string
+// Type is the type of shell
+type Type string
 
 const (
-	Bash    ShellType = "Bash"
-	Fish              = "Fish"
-	Zsh               = "Zsh"
-	Unknown           = "Unknown"
+	// Bash is the bourne again shell
+	Bash Type = "Bash"
+
+	// Fish indicates the fish shell
+	Fish = "Fish"
+
+	// Zsh indicates the fish shell
+	Zsh = "Zsh"
+
+	// Unknown indicates we aren't sure of the shell
+	Unknown = "Unknown"
 )
 
-func GetShellType(historyFileName string) ShellType {
+// GetShellType tries to figure out the shell type from a history file name
+func GetShellType(historyFileName string) Type {
 	if strings.Contains(historyFileName, "bash") {
 		return Bash
 	}

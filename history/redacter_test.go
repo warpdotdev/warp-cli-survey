@@ -1,10 +1,10 @@
 package history
 
 import (
-	"denver/survey/shell"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/zachlloyd/denver-survey-client/shell"
 )
 
 func TestRedactLineNoArgs(t *testing.T) {

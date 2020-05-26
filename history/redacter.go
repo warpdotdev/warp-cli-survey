@@ -27,12 +27,14 @@ var hasSubcommand = map[string]bool{
 	"gcloud": true,
 }
 
+// ShellHistory models a shell history file
 type ShellHistory struct {
 	FileName      string
-	ShellType     shell.ShellType
+	ShellType     shell.Type
 	RedactedLines []*RedactedCommand
 }
 
+// RedactedCommand models a single command in a shell history file
 type RedactedCommand struct {
 	Command    string
 	Subcommand string
@@ -45,7 +47,10 @@ type RedactedCommand struct {
 	Timestamp time.Time
 }
 
-func GetRedactedShellHistory(targetShellType shell.ShellType) *ShellHistory {
+// GetRedactedShellHistory returns a model of the shell history for the given shell type
+// It searches for known history file locations, parses any files it finds, and returns
+// the associatedc model.
+func GetRedactedShellHistory(targetShellType shell.Type) *ShellHistory {
 	var history *ShellHistory
 	historyFilePaths := getHistoryFiles()
 	for _, historyFilePath := range historyFilePaths {
@@ -103,6 +108,7 @@ func getHistoryFiles() []string {
 	return historyFiles
 }
 
+// Preview returns a single line preview of a command suitable for showing a user.
 func (r RedactedCommand) Preview() string {
 	preview := r.Command + " " + r.Subcommand
 	if len(r.Options) > 0 {
@@ -111,9 +117,11 @@ func (r RedactedCommand) Preview() string {
 	return preview
 }
 
+// ZshHistoryLineRegEx parses a single line of a zsh history file.
 var ZshHistoryLineRegEx = regexp.MustCompile(`^: (\d+):\d+;(.*)$`)
 
-func RedactLine(shellType shell.ShellType, line string) *RedactedCommand {
+// RedactLine redacts a single line of a history file given a shell type.
+func RedactLine(shellType shell.Type, line string) *RedactedCommand {
 	redacted := new(RedactedCommand)
 	redacted.Length = len(line)
 	if shellType == shell.Zsh {

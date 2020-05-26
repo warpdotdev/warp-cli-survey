@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/zachlloyd/denver-survey-client/question"
+	"github.com/zachlloyd/denver-survey-client/io"
 	"github.com/zachlloyd/denver-survey-client/shell"
 	"github.com/zachlloyd/denver-survey-client/store"
 )
@@ -31,15 +31,15 @@ func Start(storage store.Store, respondentId string) {
 	fmt.Println("If anything goes wrong, your survey id is", respondentId)
 	fmt.Println()
 
-	responsesByQuestionId := map[string]*question.Response{}
+	responsesByQuestionId := map[string]*io.Answer{}
 	reader := bufio.NewReader(os.Stdin)
-	questions := question.Questions()
+	questions := io.Questions()
 	for i, q := range questions {
 		if q.ShouldShowFn == nil || q.ShouldShowFn(responsesByQuestionId) {
 			response := getValidAnswer(reader, q, responsesByQuestionId)
 			if response != nil {
-				responsesByQuestionId[q.Id] = response
-				storage.WriteAnswer(response.ToStorableResponse(respondentId, i))
+				responsesByQuestionId[q.ID] = response
+				storage.Write(response.Response(respondentId, i))
 			}
 			fmt.Println()
 		}
@@ -48,9 +48,9 @@ func Start(storage store.Store, respondentId string) {
 	fmt.Println("\n🙏  That's it, thanks for taking the time! 🙏")
 }
 
-func getValidAnswer(reader *bufio.Reader, q question.Question,
-	responsesByQuestionId map[string]*question.Response) *question.Response {
-	var response *question.Response
+func getValidAnswer(reader *bufio.Reader, q io.Question,
+	responsesByQuestionId map[string]*io.Answer) *io.Answer {
+	var response *io.Answer
 	for {
 		printQuestion(q)
 		text, _ := reader.ReadString('\n')
@@ -64,7 +64,7 @@ func getValidAnswer(reader *bufio.Reader, q question.Question,
 
 		if response.PreviewFile {
 			fmt.Println()
-			shellAnswer := responsesByQuestionId["shell_type"].Answer
+			shellAnswer := responsesByQuestionId["shell_type"].Text
 			history := q.GetShellHistoryFn(shell.GetShellType(shellAnswer))
 			fmt.Println("Here's a preview of your shell history file (",
 				history.FileName, ") with options and arguments stripped:")
@@ -98,15 +98,15 @@ func getValidAnswer(reader *bufio.Reader, q question.Question,
 	}
 }
 
-func printQuestion(q question.Question) {
-	color.Blue(q.Question)
+func printQuestion(q io.Question) {
+	color.Blue(q.Text)
 	fmt.Println()
-	if q.QuestionType == question.MultipleChoice || q.QuestionType == question.File {
+	if q.Type == io.MultipleChoice || q.Type == io.File {
 		for j, v := range q.Values {
 			fmt.Println(color.GreenString(strconv.Itoa(j+1)), " ", v)
 		}
 
-		if q.QuestionType == question.MultipleChoice {
+		if q.Type == io.MultipleChoice {
 			fmt.Println(color.GreenString(strconv.Itoa(len(q.Values)+1)), "  Other")
 			if q.MultiSelect {
 				fmt.Println("Please enter a number between 1 -", strconv.Itoa(len(q.Values)+1),

@@ -13,15 +13,14 @@ const surveyResponseEndpoint = "https://us-central1-denver-survey.cloudfunctions
 type webStore struct{}
 
 func NewWebStore() Store {
-	fmt.Println("New webstore")
 	return webStore{}
 }
 
-func (ws webStore) WriteAnswer(response Response) {
+func (ws webStore) Write(response Response) {
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(response)
 
-	fmt.Println("Sending response with respondentId", response.RespondentId)
+	fmt.Println("Sending response with respondentId", response.RespondentID)
 
 	resp, err := http.Post(surveyResponseEndpoint, "application/json", b)
 	if err != nil {

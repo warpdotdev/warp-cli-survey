@@ -12,18 +12,18 @@ import (
 
 func main() {
 	var storage store.Store
-	var respondentId string
+	var respondentID string
 
 	app := &cli.App{
 		Name:  "survey",
 		Usage: "Run the Project Denver survey",
 		Action: func(c *cli.Context) error {
-			survey.Start(storage, respondentId)
+			survey.Start(storage, respondentID)
 			return nil
 		},
 		Before: func(c *cli.Context) error {
 			storage = store.NewWebStore()
-			respondentId = uuid.New().String()
+			respondentID = uuid.New().String()
 			return nil
 		},
 	}

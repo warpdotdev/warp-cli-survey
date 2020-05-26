@@ -1,4 +1,4 @@
-package question
+package io
 
 import (
 	"testing"
@@ -7,32 +7,32 @@ import (
 )
 
 func freeForm() Question {
-	return Question{Id: "id0", Question: "q0",
-		QuestionType: FreeForm}
+	return Question{ID: "id0", Text: "q0",
+		Type: FreeForm}
 }
 
 func multiSelect() Question {
-	return Question{Id: "id1", Question: "q1",
-		QuestionType: MultipleChoice, MultiSelect: true,
+	return Question{ID: "id1", Text: "q1",
+		Type: MultipleChoice, MultiSelect: true,
 		Values: []string{"a", "b", "c", "d"}}
 }
 
 func multipleChoice() Question {
-	return Question{Id: "id2", Question: "q2",
-		QuestionType: MultipleChoice,
+	return Question{ID: "id2", Text: "q2",
+		Type: MultipleChoice,
 		Values:       []string{"a", "b", "c", "d"}}
 }
 
 func file() Question {
-	return Question{Id: "id3", Question: "q3",
-		QuestionType: File}
+	return Question{ID: "id3", Text: "q3",
+		Type: File}
 }
 
 func TestFreeForm(t *testing.T) {
 	q := freeForm()
 	r := q.Parse("hello")
 	assert.Equal(t, 0, len(r.SelectedOptions))
-	assert.Equal(t, "hello", r.Answer)
+	assert.Equal(t, "hello", r.Text)
 }
 
 func TestFile(t *testing.T) {
