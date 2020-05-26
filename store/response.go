@@ -6,11 +6,6 @@ import (
 	"github.com/zachlloyd/denver-survey-client/shell"
 )
 
-// Storer is an interface for recording responses
-type Storer interface {
-	Write(response Response)
-}
-
 // Response is an answer to a single question
 type Response struct {
 	// RespondentID is a uuid for a survey respondent
