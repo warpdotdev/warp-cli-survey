@@ -15,7 +15,7 @@ import (
 
 	"github.com/jessevdk/go-flags"
 	"github.com/kballard/go-shellquote"
-	"github.com/zachlloyd/denver/survey/common/shell"
+	"github.com/zachlloyd/denver-survey-client/shell"
 )
 
 // Whitelisted commands that we know have subcommands

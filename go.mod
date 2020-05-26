@@ -1,10 +1,8 @@
-module github.com/zachlloyd/denver/survey/client
+module github.com/zachlloyd/denver-survey-client
 
 go 1.14
 
 require (
-	cloud.google.com/go/bigquery v1.8.0
-	cloud.google.com/go/storage v1.8.0
 	github.com/fatih/color v1.9.0
 	github.com/google/uuid v1.1.1
 	github.com/jessevdk/go-flags v1.4.0

@@ -1,8 +1,8 @@
 package question
 
 import (
-	"github.com/zachlloyd/denver/survey/client/history"
-	"github.com/zachlloyd/denver/survey/common/store"
+	"github.com/zachlloyd/denver-survey-client/history"
+	"github.com/zachlloyd/denver-survey-client/store"
 )
 
 type Response struct {

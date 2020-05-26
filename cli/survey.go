@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/urfave/cli"
-	"github.com/zachlloyd/denver/survey/client/survey"
-	"github.com/zachlloyd/denver/survey/common/store"
+	"github.com/zachlloyd/denver-survey-client/store"
+	"github.com/zachlloyd/denver-survey-client/survey"
 )
 
 func main() {

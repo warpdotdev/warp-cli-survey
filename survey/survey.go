@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/zachlloyd/denver/survey/client/question"
-	"github.com/zachlloyd/denver/survey/common/shell"
-	"github.com/zachlloyd/denver/survey/common/store"
+	"github.com/zachlloyd/denver-survey-client/question"
+	"github.com/zachlloyd/denver-survey-client/shell"
+	"github.com/zachlloyd/denver-survey-client/store"
 )
 
 const filePreviewLines = 20

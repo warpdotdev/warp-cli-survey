@@ -3,8 +3,8 @@ package question
 import (
 	"os"
 
-	"github.com/zachlloyd/denver/survey/client/history"
-	"github.com/zachlloyd/denver/survey/common/shell"
+	"github.com/zachlloyd/denver-survey-client/history"
+	"github.com/zachlloyd/denver-survey-client/shell"
 )
 
 func Questions() []Question {

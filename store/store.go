@@ -3,7 +3,7 @@ package store
 import (
 	"time"
 
-	"github.com/zachlloyd/denver/survey/common/shell"
+	"github.com/zachlloyd/denver-survey-client/shell"
 )
 
 type Store interface {

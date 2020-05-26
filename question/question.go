@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/zachlloyd/denver/survey/client/history"
-	"github.com/zachlloyd/denver/survey/common/shell"
+	"github.com/zachlloyd/denver-survey-client/history"
+	"github.com/zachlloyd/denver-survey-client/shell"
 )
 
 type QuestionType string
