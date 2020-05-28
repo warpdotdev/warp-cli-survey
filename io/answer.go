@@ -41,10 +41,12 @@ type Answer struct {
 }
 
 // Response returns a response model suitable for storing or sending to a server
-func (r *Answer) Response(respondendID string, questionNum int) store.Response {
+func (r *Answer) Response(respondentID string, questionNum int) store.Response {
 	return store.Response{
-		Answers:      r.getAnswers(respondendID, questionNum),
-		HistoryLines: r.getHistoryLines(respondendID),
+		RespondentID: respondentID,
+		QuestionNum:  questionNum,
+		Answers:      r.getAnswers(respondentID, questionNum),
+		HistoryLines: r.getHistoryLines(respondentID),
 	}
 }
 
@@ -52,7 +54,7 @@ func (r *Answer) getAnswers(respondentID string, questionNum int) []store.Answer
 	q := r.Question
 	switch q.Type {
 	case FreeForm, File:
-		return []store.Answer{store.Answer{
+		return []store.Answer{{
 			RespondentID: respondentID,
 			QuestionNum:  questionNum,
 			QuestionID:   q.ID,

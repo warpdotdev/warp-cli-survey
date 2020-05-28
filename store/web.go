@@ -8,21 +8,22 @@ import (
 	"net/http"
 )
 
-const surveyResponseEndpoint = "https://us-central1-denver-survey.cloudfunctions.net/surveyresponse"
-
-type webStore struct{}
-
-func NewWebStore() Storer {
-	return webStore{}
+type webStore struct {
+	serverRoot string
 }
 
-func (ws webStore) Write(response Response) {
+// NewWebStore makes a webstore pointing at the given serverRoot
+func NewWebStore(serverRoot string) Storer {
+	return &webStore{serverRoot: serverRoot}
+}
+
+func (ws *webStore) Write(response Response) {
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(response)
 
-	fmt.Println("Sending response with respondentId", response.RespondentID)
+	fmt.Println("Sending response with respondentID", response.RespondentID)
 
-	resp, err := http.Post(surveyResponseEndpoint, "application/json", b)
+	resp, err := http.Post(ws.serverRoot, "application/json", b)
 	if err != nil {
 		log.Println("Unable to save response...are you online?", err)
 	}
