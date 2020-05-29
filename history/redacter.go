@@ -25,6 +25,7 @@ var hasSubcommand = map[string]bool{
 	"npm":    true,
 	"aws":    true,
 	"gcloud": true,
+	"go":     true,
 }
 
 // ShellHistory models a shell history file

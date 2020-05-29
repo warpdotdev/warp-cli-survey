@@ -10,9 +10,9 @@ import (
 // Questions returns a list of all questions in the survey
 func Questions() []Question {
 	return []Question{
-		Question{ID: "company", Text: "What company do you work at?", Type: FreeForm},
-		Question{ID: "years_of_experience", Text: "How many years experience do you have?", Type: FreeForm},
-		Question{ID: "role", Text: "Which of these best describes your role?", Type: MultipleChoice,
+		{ID: "company", Text: "What company do you work at?", Type: FreeForm},
+		{ID: "years_of_experience", Text: "How many years experience do you have?", Type: FreeForm},
+		{ID: "role", Text: "Which of these best describes your role?", Type: MultipleChoice,
 			Values: []string{
 				"Software Engineer",
 				"DevOps Engineer / SRE",
@@ -20,12 +20,12 @@ func Questions() []Question {
 				"Engineering Leadership (Director / VP / CTO)",
 				"Test Engineer",
 				"QA"}},
-		Question{ID: "platform_develop_on", Text: "What platform do you (or your team) develop on?", Type: MultipleChoice,
+		{ID: "platform_develop_on", Text: "What platform do you (or your team) develop on?", Type: MultipleChoice,
 			Values: []string{
 				"Mac",
 				"Linux",
 				"Windows"}},
-		Question{ID: "platform_develop_for", Text: "What platforms do you primarily develop for?",
+		{ID: "platform_develop_for", Text: "What platforms do you primarily develop for?",
 			Type: MultipleChoice, MultiSelect: true,
 			Values: []string{
 				"Linux / Unix (server / backend)",
@@ -34,11 +34,11 @@ func Questions() []Question {
 				"AndroId",
 				"Windows",
 				"Mac"}},
-		Question{ID: "shell_type", Text: "Checking your system...looks your default shell is:", Type: FreeForm,
+		{ID: "shell_type", Text: "Checking your system...looks your default shell is:", Type: FreeForm,
 			SuggestedAnswerFn: func() string {
 				return os.ExpandEnv("$SHELL")
 			}},
-		Question{ID: "shell_history",
+		{ID: "shell_history",
 			Text: "Is it OK to upload a redacted version of your shell history file (zsh / bash only)?\nThis will be used only for aggregate analysis of how developers use the CLI.",
 			Type: File,
 			Values: []string{
@@ -49,7 +49,7 @@ func Questions() []Question {
 				shellType := shell.GetShellType(responsesSoFar["shell_type"].Text)
 				return shellType == shell.Bash || shellType == shell.Zsh
 			}},
-		Question{ID: "terminal_type", Text: "What terminal do you typically use?", Type: MultipleChoice,
+		{ID: "terminal_type", Text: "What terminal do you typically use?", Type: MultipleChoice,
 			Values: []string{
 				"Mac Terminal",
 				"iTerm",
@@ -57,7 +57,7 @@ func Questions() []Question {
 				"Windows Command Line",
 				"PowerShell",
 				"A linux terminal (e.g. Gnome)"}},
-		Question{ID: "other_tools", Text: "Which of the following applications / platforms / configurations do you use to improve your experience in the command-line?",
+		{ID: "other_tools", Text: "Which of the following applications / platforms / configurations do you use to improve your experience in the command-line?",
 			Type: MultipleChoice, MultiSelect: true,
 			Values: []string{
 				"tmux",
@@ -65,7 +65,7 @@ func Questions() []Question {
 				"ohmyzsh",
 				"a dotfiles repo",
 				"None"}},
-		Question{ID: "cli_experience", Text: "What would you most like to see improved in the command-line experience?",
+		{ID: "cli_experience", Text: "What would you most like to see improved in the command-line experience?",
 			Type: MultipleChoice, MultiSelect: true,
 			Values: []string{
 				"Better command autocomplete",
@@ -75,6 +75,6 @@ func Questions() []Question {
 				"Real-time collaboration (e.g. share terminal input and output with team members)",
 				"Collaborative terminal workflows like \"command-reviews\" (similar to a code review but for commands)",
 				"Better session and window management (e.g. built in Tmux functionality)"}},
-		Question{ID: "email", Text: "Interested in following Project Denver / helping test the product?  Please let us know your email.", Type: FreeForm},
+		{ID: "email", Text: "Interested in following Project Denver / helping test the product?  Please let us know your email.", Type: FreeForm},
 	}
 }
