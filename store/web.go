@@ -21,7 +21,7 @@ func (ws *webStore) Write(response Response) {
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(response)
 
-	fmt.Println("Sending response with respondentID", response.RespondentID)
+	fmt.Println("Sending response with respondentID", response.RespondentID, "for question", response.QuestionID)
 
 	resp, err := http.Post(ws.serverRoot, "application/json", b)
 	if err != nil {

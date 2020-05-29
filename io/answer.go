@@ -45,6 +45,7 @@ func (r *Answer) Response(respondentID string, questionNum int) store.Response {
 	return store.Response{
 		RespondentID: respondentID,
 		QuestionNum:  questionNum,
+		QuestionID:   r.Question.ID,
 		Answers:      r.getAnswers(respondentID, questionNum),
 		HistoryLines: r.getHistoryLines(respondentID),
 	}

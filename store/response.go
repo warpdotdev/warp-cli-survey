@@ -11,6 +11,8 @@ type Response struct {
 	// RespondentID is a uuid for a survey respondent
 	RespondentID string
 
+	QuestionID string
+
 	// QuestionNum is the question number in the survey
 	QuestionNum int
 
