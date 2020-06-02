@@ -17,7 +17,7 @@ function run_denver_survey() {
   elif [[ "$OSTYPE" == "darwin"* ]]; then
       set -x
       curl -fsSL https://github.com/zachlloyd/denver-survey-client/releases/download/$VERSION/dsurvey.$VERSION.mac.x86_64.tar.gz | tar -xzv dsurvey
-      ./dsurvey
+      #./dsurvey
   else
       set +x
       echo "The Denver Survey installer does not currently work for your platform: $OS"
