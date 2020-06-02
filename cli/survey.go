@@ -29,7 +29,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "serverRoot",
-				Value:       surveyMasterUrl,
+				Value:       surveyMasterURL,
 				Usage:       "The root url for the survey server",
 				Destination: &serverRoot,
 			},
