@@ -5,7 +5,7 @@
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh| bash
 
-VERSION="0.1.1"
+VERSION="0.1.0"
 
 set -e
 
