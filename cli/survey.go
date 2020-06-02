@@ -10,6 +10,8 @@ import (
 	"github.com/zachlloyd/denver-survey-client/survey"
 )
 
+const surveyMasterURL = "https://server-master-zonhtougpa-uc.a.run.app"
+
 func main() {
 	var storage store.Storer
 	var respondentID string
@@ -27,7 +29,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "serverRoot",
-				Value:       "http://localhost:9090",
+				Value:       surveyMasterUrl,
 				Usage:       "The root url for the survey server",
 				Destination: &serverRoot,
 			},
