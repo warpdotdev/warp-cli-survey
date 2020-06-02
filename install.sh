@@ -12,11 +12,11 @@ set -e
 function run_denver_survey() {
   if [[ "$OSTYPE" == "linux-gnu" ]]; then
       set -x
-      curl -fsSL https://github.com/zachlloyd/denver-survey-client/releases/download/v$VERSION/dsurvey.$VERSION.linux.x86_64.tar.gz | tar -xzv dsurvey
+      curl -fsSL https://github.com/zachlloyd/denver-survey-client/releases/download/$VERSION/dsurvey.$VERSION.linux.x86_64.tar.gz | tar -xzv dsurvey
       ./dsurvey
   elif [[ "$OSTYPE" == "darwin"* ]]; then
       set -x
-      curl -fsSL https://github.com/zachlloyd/denver-survey-client/releases/download/v$VERSION/dsurvey.$VERSION.mac.x86_64.tar.gz | tar -xzv dsurvey
+      curl -fsSL https://github.com/zachlloyd/denver-survey-client/releases/download/$VERSION/dsurvey.$VERSION.mac.x86_64.tar.gz | tar -xzv dsurvey
       ./dsurvey
   else
       set +x
