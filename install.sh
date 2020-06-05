@@ -3,20 +3,20 @@
 # Denver Survey installer
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh| bash
+#   source <(curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh)
 
-VERSION="0.1.0"
+VERSION="0.1.2"
 
 set -e
 
 function run_denver_survey() {
   if [[ "$OSTYPE" == "linux-gnu" ]]; then
-      set -x
+      # set -x
       curl -fsSL https://github.com/zachlloyd/denver-survey-client/releases/download/$VERSION/dsurvey.$VERSION.linux.x86_64.tar.gz | tar -xzv dsurvey
       ./dsurvey
       rm dsurvey
   elif [[ "$OSTYPE" == "darwin"* ]]; then
-      set -x
+      #set -x
       curl -fsSL https://github.com/zachlloyd/denver-survey-client/releases/download/$VERSION/dsurvey.$VERSION.mac.x86_64.tar.gz | tar -xzv dsurvey
       ./dsurvey
       rm dsurvey

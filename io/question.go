@@ -63,7 +63,7 @@ func (q Question) Parse(answer string) *Answer {
 	}
 
 	if len(answer) == 0 {
-		return &Answer{Question: q, IsDone: false, Message: "Please enter an answer!"}
+		return &Answer{Question: q, IsDone: true, Skipped: true, SkipThanks: true}
 	}
 
 	if q.Type == MultipleChoice {

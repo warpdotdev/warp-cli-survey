@@ -55,6 +55,16 @@ func TestRedactLineSha1Equal(t *testing.T) {
 	assert.Equal(t, r1.Sha1, r2.Sha1)
 }
 
+func TestRedactLinePipeWithArgs(t *testing.T) {
+	r := RedactLine(shell.Bash, "gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin")
+	assert.Equal(t, "gcloud", r.Command)
+}
+
+func TestRedactLineUnparseable(t *testing.T) {
+	r := RedactLine(shell.Bash, "gcloud auth print-access-token|>*)&(*(docker login -u oauth2accesstoken --password-stdin https://gcr.io\\")
+	assert.Nil(t, r)
+}
+
 func TestParseZshLineBasics(t *testing.T) {
 	res := ZshHistoryLineRegEx.FindStringSubmatch(": 1584112360:0;ls")
 	assert.Equal(t, res[1], "1584112360")

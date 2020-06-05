@@ -20,7 +20,7 @@ func Questions() []Question {
 				"Engineering Leadership (Director / VP / CTO)",
 				"Test Engineer",
 				"QA"}},
-		{ID: "platform_develop_on", Text: "What platform do you (or your team) develop on?", Type: MultipleChoice,
+		{ID: "platform_develop_on", Text: "What type of computer do you write code on?", Type: MultipleChoice,
 			Values: []string{
 				"Mac",
 				"Linux",
@@ -39,7 +39,7 @@ func Questions() []Question {
 				return os.ExpandEnv("$SHELL")
 			}},
 		{ID: "shell_history",
-			Text: "Is it OK to upload a redacted version of your shell history file (zsh / bash only)?\nThis will be used only for aggregate analysis of how developers use the CLI.",
+			Text: "Can we take a look at your shell history to get a better sense of how you use the CLI?\n> We will strip out all sensitive information first.",
 			Type: File,
 			Values: []string{
 				"Yes (we will show you a preview first)",
@@ -75,6 +75,6 @@ func Questions() []Question {
 				"Real-time collaboration (e.g. share terminal input and output with team members)",
 				"Collaborative terminal workflows like \"command-reviews\" (similar to a code review but for commands)",
 				"Better session and window management (e.g. built in Tmux functionality)"}},
-		{ID: "email", Text: "Interested in following Project Denver / helping test the product?  Please let us know your email.", Type: FreeForm},
+		{ID: "email", Text: "Interested in seeing survey results and following our progress?  Please let us know your email. [Leave blank to skip]", Type: FreeForm},
 	}
 }

@@ -13,6 +13,12 @@ type Answer struct {
 	// IsDone is true if there is nothing else to prompt
 	IsDone bool
 
+	// Skipped is true if the user skipped the question
+	Skipped bool
+
+	// SkipThanks is true if we should skip thanking the user for their response
+	SkipThanks bool
+
 	// Message should be displayed to the user if non-nil
 	Message string
 

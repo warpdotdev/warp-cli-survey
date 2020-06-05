@@ -25,21 +25,29 @@ var positives = []string{
 	"Thanks!",
 }
 
-func Start(storage store.Storer, respondentId string) {
-	fmt.Println("\n👋  Welcome to the Project Denver survey! 👋")
-	fmt.Println("⏲  This should take no more than 5-10 minutes. ⏲")
-	fmt.Println("If anything goes wrong, your survey id is", respondentId)
-	fmt.Println()
+// Start runs the survey and writes responses to the storer
+func Start(storage store.Storer, respondentID string) {
+	fmt.Println("\n> Welcome to the Project Denver survey! 👋")
+	fmt.Println("> This should take no more than 5-10 minutes. ⏲")
+	fmt.Println("\n> At Denver we are building a modern, collaborative command-line terminal for all developers.")
+	fmt.Println("> The goal of the survey is to better understand how today's developer uses the CLI ✅")
+	fmt.Println("> At the end of the survey, you can leave your email and we will send you the results. 📈")
+	fmt.Println("> For more info on Denver, please check out <website here> 🕸️")
+	fmt.Println("\n> Code for the survey is open-source. Feel free to check it out to make sure it isn't doing anything fishy.")
+	fmt.Println("> https://github.com/zachlloyd/denver-survey-client")
+	fmt.Println("\n> Let's get started...")
 
-	responsesByQuestionId := map[string]*io.Answer{}
+	responsesByQuestionID := map[string]*io.Answer{}
 	reader := bufio.NewReader(os.Stdin)
 	questions := io.Questions()
 	for i, q := range questions {
-		if q.ShouldShowFn == nil || q.ShouldShowFn(responsesByQuestionId) {
-			response := getValidAnswer(reader, q, responsesByQuestionId)
+		if q.ShouldShowFn == nil || q.ShouldShowFn(responsesByQuestionID) {
+			response := getValidAnswer(reader, q, responsesByQuestionID)
 			if response != nil {
-				responsesByQuestionId[q.ID] = response
-				storage.Write(response.Response(respondentId, i))
+				responsesByQuestionID[q.ID] = response
+				if !response.Skipped {
+					storage.Write(response.Response(respondentID, i))
+				}
 			}
 			fmt.Println()
 		}
@@ -48,8 +56,10 @@ func Start(storage store.Storer, respondentId string) {
 	fmt.Println("\n🙏  That's it, thanks for taking the time! 🙏")
 }
 
+// Shows the response prompt until the user has selected a valid answer
+// and returns that answer
 func getValidAnswer(reader *bufio.Reader, q io.Question,
-	responsesByQuestionId map[string]*io.Answer) *io.Answer {
+	responsesByQuestionID map[string]*io.Answer) *io.Answer {
 	var response *io.Answer
 	for {
 		printQuestion(q)
@@ -63,34 +73,13 @@ func getValidAnswer(reader *bufio.Reader, q io.Question,
 		}
 
 		if response.PreviewFile {
-			fmt.Println()
-			shellAnswer := responsesByQuestionId["shell_type"].Text
-			history := q.GetShellHistoryFn(shell.GetShellType(shellAnswer))
-			fmt.Println("Here's a preview of your shell history file (",
-				history.FileName, ") with options and arguments stripped:")
-			fmt.Println()
-
-			for i, redactedCmd := range history.RedactedLines {
-				fmt.Println(redactedCmd.Preview())
-				if i > filePreviewLines {
-					fmt.Println("... plus", len(history.RedactedLines)-i, "other redacted commands...")
-					fmt.Println()
-					break
-				}
-			}
-			fmt.Println("Does this look OK to share? [Y / n]")
-			shareFile, _ := reader.ReadString('\n')
-			trimmed := strings.TrimSpace(shareFile)
-			if len(trimmed) == 0 || strings.EqualFold(trimmed, "Y") {
-				response.History = history
-			} else {
-				fmt.Println("Ok, no problem, we won't upload it.")
-				return nil
-			}
+			previewFile(reader, q, response, responsesByQuestionID)
 		}
 
 		if response.IsDone {
-			fmt.Println(positives[rand.Intn(len(positives))])
+			if !response.SkipThanks {
+				fmt.Println(positives[rand.Intn(len(positives))])
+			}
 			return response
 		}
 
@@ -98,16 +87,61 @@ func getValidAnswer(reader *bufio.Reader, q io.Question,
 	}
 }
 
+func previewFile(reader *bufio.Reader, q io.Question, response *io.Answer, responsesByQuestionID map[string]*io.Answer) {
+	shellAnswer := responsesByQuestionID["shell_type"].Text
+	history := q.GetShellHistoryFn(shell.GetShellType(shellAnswer))
+	fmt.Print("\nHere's a preview of your shell history file (",
+		history.FileName, ") with options and arguments stripped:\n\n")
+
+	for i, redactedCmd := range history.RedactedLines {
+		fmt.Println(redactedCmd.Preview())
+		if i > filePreviewLines {
+			fmt.Print("... plus ", len(history.RedactedLines)-i, " other redacted commands.\n\n")
+			break
+		}
+	}
+	fmt.Println("Does this look OK to upload? [Y (yes, ok) / a (show all of the commands) / n (no, please don't upload)]")
+	shareFile, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Oops, error reading your input. We won't upload it.")
+		response.SkipThanks = true
+		return
+	}
+
+	trimmed := strings.TrimSpace(shareFile)
+	if strings.EqualFold(trimmed, "a") {
+		for i, redactedCmd := range history.RedactedLines {
+			if i > filePreviewLines {
+				fmt.Println(redactedCmd.Preview())
+			}
+		}
+		fmt.Println("\n> Does this look OK to upload? [Y (yes, ok) / n (no, please don't upload)]")
+		shareFile, err = reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Oops, error reading your input. We won't upload it.")
+			response.SkipThanks = true
+			return
+		}
+		trimmed = strings.TrimSpace(shareFile)
+	}
+
+	if len(trimmed) == 0 || strings.EqualFold(trimmed, "Y") {
+		response.History = history
+	} else {
+		fmt.Println("Ok, no problem, we won't upload it.")
+		response.SkipThanks = true
+	}
+}
+
 func printQuestion(q io.Question) {
-	color.Blue(q.Text)
-	fmt.Println()
+	fmt.Print("> ", q.Text, "\n\n")
 	if q.Type == io.MultipleChoice || q.Type == io.File {
 		for j, v := range q.Values {
-			fmt.Println(color.GreenString(strconv.Itoa(j+1)), " ", v)
+			fmt.Println(color.GreenString(strconv.Itoa(j+1)), v)
 		}
 
 		if q.Type == io.MultipleChoice {
-			fmt.Println(color.GreenString(strconv.Itoa(len(q.Values)+1)), "  Other")
+			fmt.Println(color.GreenString(strconv.Itoa(len(q.Values)+1)), "Other")
 			if q.MultiSelect {
 				fmt.Println("Please enter a number between 1 -", strconv.Itoa(len(q.Values)+1),
 					", or multiple choices separated by commas.")

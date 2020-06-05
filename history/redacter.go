@@ -76,7 +76,9 @@ func GetRedactedShellHistory(targetShellType shell.Type) *ShellHistory {
 					break
 				}
 				r := RedactLine(shellType, strings.TrimSpace(line))
-				history.RedactedLines = append(history.RedactedLines, r)
+				if r != nil {
+					history.RedactedLines = append(history.RedactedLines, r)
+				}
 			}
 			return history
 		}
@@ -113,7 +115,7 @@ func getHistoryFiles() []string {
 func (r RedactedCommand) Preview() string {
 	preview := r.Command + " " + r.Subcommand
 	if len(r.Options) > 0 {
-		preview += " [" + strings.Join(r.Options, ",") + "]"
+		preview += " [flags: " + strings.Join(r.Options, ",") + "]"
 	}
 	return preview
 }
@@ -121,7 +123,8 @@ func (r RedactedCommand) Preview() string {
 // ZshHistoryLineRegEx parses a single line of a zsh history file.
 var ZshHistoryLineRegEx = regexp.MustCompile(`^: (\d+):\d+;(.*)$`)
 
-// RedactLine redacts a single line of a history file given a shell type.
+// RedactLine redacts a single line of a history file given a shell type
+// and returns the redacted command or nil if there was an error parsing
 func RedactLine(shellType shell.Type, line string) *RedactedCommand {
 	redacted := new(RedactedCommand)
 	redacted.Length = len(line)
@@ -142,7 +145,7 @@ func RedactLine(shellType shell.Type, line string) *RedactedCommand {
 
 	splitLine, err := shellquote.Split(line)
 	if err != nil {
-		// Error parsing, just skip
+		// log.Println("Unable to parse command, skipping", line)
 		return nil
 	}
 
