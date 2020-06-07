@@ -5,7 +5,7 @@
 # Usage:
 #   source <(curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh)
 
-VERSION="0.1.2"
+VERSION="0.1.3"
 
 set -e
 
