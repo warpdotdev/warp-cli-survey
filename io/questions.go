@@ -177,7 +177,8 @@ var questionMap = map[QuestionID]Question{
 		Type: FreeForm},
 	payFor: {ID: payFor, Text: "Is there an improvement to the command-line you would pay $10 / mo for?  If so, please tell us about it.",
 		Type: FreeForm},
-	email: {ID: email, Text: "Interested in seeing survey results and following our progress?  Please let us know your email.",
+	email: {ID: email, Text: "Could we have your email to send you the survey results?",
 		Type: FreeForm, Skippable: true},
-	okToReachOut: {ID: okToReachOut, Text: "We'd love to reach out and pick your brain on the product - is that OK?", Type: YesNo},
+	okToReachOut: {ID: okToReachOut, Text: "We'd love to reach out and pick your brain on the product - is that OK?",
+		Type: YesNo, HasDefault: true},
 }

@@ -40,6 +40,9 @@ type Question struct {
 	// Skippable is true if the user can skip the question
 	Skippable bool
 
+	// HasDefault is true if the user can hit enter to select a default value
+	HasDefault bool
+
 	// Text is the text presented to the user to answer the question
 	Text string
 
@@ -74,7 +77,7 @@ func (q Question) Parse(answer string) *Answer {
 		}
 	}
 
-	if len(answer) == 0 {
+	if len(answer) == 0 && !q.HasDefault {
 		if q.Skippable {
 			return &Answer{Question: q, IsDone: true, Skipped: true, SkipThanks: true}
 		}

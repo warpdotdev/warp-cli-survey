@@ -2,6 +2,7 @@ package survey
 
 import (
 	"bufio"
+	"time"
 
 	"fmt"
 	"math/rand"
@@ -10,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/schollz/progressbar/v3"
 	"github.com/zachlloyd/denver-survey-client/io"
 	"github.com/zachlloyd/denver-survey-client/shell"
 	"github.com/zachlloyd/denver-survey-client/store"
@@ -47,7 +49,26 @@ func Start(storage store.Storer, respondentID string, historyFilePath *string) {
 			if response != nil {
 				responsesByQuestionID[q.ID] = response
 				if !response.Skipped {
-					storage.Write(response.Response(respondentID, i))
+					// Execute in go routine so we can show progress
+					ch := make(chan int)
+					go func() {
+						storage.Write(response.Response(respondentID, i))
+						ch <- 1
+					}()
+
+					bar := progressbar.NewOptions(-1, progressbar.OptionSpinnerType(70))
+				ProgressLoop:
+					for {
+						select {
+						case <-ch:
+							bar.Clear()
+							break ProgressLoop
+						default:
+							bar.Add(1)
+							time.Sleep(40 * time.Millisecond)
+						}
+					}
+
 				}
 			}
 			fmt.Println()
@@ -161,10 +182,10 @@ func printQuestion(q io.Question) {
 				fmt.Println(color.GreenString(strconv.Itoa(endValue)), "Other")
 			}
 			if q.MultiSelect {
-				fmt.Print("Please enter a number between 1 -", endValue,
-					", or multiple choices separated by commas.")
+				fmt.Print("Please enter a number between 1 - ", endValue,
+					", or multiple choices separated by commas.\n")
 			} else {
-				fmt.Print("Please enter a number between 1 -", endValue, ".")
+				fmt.Print("Please enter a number between 1 - ", endValue, ".\n")
 			}
 		}
 	}
