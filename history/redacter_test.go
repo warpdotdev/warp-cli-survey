@@ -2,66 +2,73 @@ package history
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/zachlloyd/denver-survey-client/shell"
 )
 
-func TestRedactLineNoArgs(t *testing.T) {
-	r := RedactLine(shell.Bash, "ls")
+func TestRedactCommandNoArgs(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"ls"})
 	assert.Equal(t, "ls", r.Command)
 }
 
-func TestRedactLineOneArg(t *testing.T) {
-	r := RedactLine(shell.Bash, "echo bar")
+func TestRedactCommandOneArg(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"echo bar"})
 	assert.Equal(t, "echo", r.Command)
 }
 
-func TestRedactLineOneOpt(t *testing.T) {
-	r := RedactLine(shell.Bash, "ls -a")
+func TestRedactCommandOneOpt(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"ls -a"})
 	assert.Equal(t, "ls", r.Command)
 	assert.Equal(t, "a", r.Options[0])
 }
 
-func TestRedactLineTwoOptOneFlag(t *testing.T) {
-	r := RedactLine(shell.Bash, "ls -al")
+func TestRedactCommandTwoOptOneFlag(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"ls -al"})
 	assert.Equal(t, "ls", r.Command)
 	assert.Equal(t, "al", r.Options[0])
 }
 
-func TestRedactLineTwoOpt(t *testing.T) {
-	r := RedactLine(shell.Bash, "ls -a -l")
+func TestRedactCommandTwoOpt(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"ls -a -l"})
 	assert.Equal(t, "ls", r.Command)
 	assert.Equal(t, "a", r.Options[0])
 	assert.Equal(t, "l", r.Options[1])
 }
 
-func TestRedactLineLongFlag(t *testing.T) {
-	r := RedactLine(shell.Bash, "ls --help")
+func TestRedactCommandLongFlag(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"ls --help"})
 	assert.Equal(t, "ls", r.Command)
 	assert.Equal(t, "help", r.Options[0])
 }
 
-func TestRedactLineFlagWithParam(t *testing.T) {
-	r := RedactLine(shell.Bash, "ls --foo=bar")
+func TestRedactCommandFlagWithParam(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"ls --foo=bar"})
 	assert.Equal(t, "ls", r.Command)
 	assert.Equal(t, "foo", r.Options[0])
 	assert.Equal(t, 1, len(r.Options))
 }
 
-func TestRedactLineSha1Equal(t *testing.T) {
-	r1 := RedactLine(shell.Bash, "ls --foo=bar")
-	r2 := RedactLine(shell.Bash, "ls --foo=bar")
+func TestRedactCommandSha1Equal(t *testing.T) {
+	r1 := RedactCommand(shell.Bash, []string{"ls --foo=bar"})
+	r2 := RedactCommand(shell.Bash, []string{"ls --foo=bar"})
 	assert.Equal(t, r1.Sha1, r2.Sha1)
 }
 
-func TestRedactLinePipeWithArgs(t *testing.T) {
-	r := RedactLine(shell.Bash, "gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin")
+func TestRedactCommandBashTimestamps(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"#1591025337", "whois nterm.com"})
+	assert.Equal(t, "whois", r.Command)
+	assert.Equal(t, time.Unix(1591025337, 0), r.Timestamp)
+}
+
+func TestRedactCommandPipeWithArgs(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin"})
 	assert.Equal(t, "gcloud", r.Command)
 }
 
-func TestRedactLineUnparseable(t *testing.T) {
-	r := RedactLine(shell.Bash, "gcloud auth print-access-token|>*)&(*(docker login -u oauth2accesstoken --password-stdin https://gcr.io\\")
+func TestRedactCommandUnparseable(t *testing.T) {
+	r := RedactCommand(shell.Bash, []string{"gcloud auth print-access-token|>*)&(*(docker login -u oauth2accesstoken --password-stdin https://gcr.io\\"})
 	assert.Nil(t, r)
 }
 

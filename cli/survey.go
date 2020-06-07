@@ -16,6 +16,7 @@ func main() {
 	var storage store.Storer
 	var respondentID string
 	var serverRoot string
+	var historyFile string
 
 	app := &cli.App{
 		Name:  "survey",
@@ -23,7 +24,11 @@ func main() {
 		Action: func(c *cli.Context) error {
 			storage = store.NewWebStore(serverRoot)
 			respondentID = uuid.New().String()
-			survey.Start(storage, respondentID)
+			if len(historyFile) == 0 {
+				survey.Start(storage, respondentID, nil)
+			} else {
+				survey.Start(storage, respondentID, &historyFile)
+			}
 			return nil
 		},
 		Flags: []cli.Flag{
@@ -32,6 +37,12 @@ func main() {
 				Value:       surveyMasterURL,
 				Usage:       "The root url for the survey server",
 				Destination: &serverRoot,
+			},
+			&cli.StringFlag{
+				Name:        "historyFile",
+				Value:       "",
+				Usage:       "A history file to parse",
+				Destination: &historyFile,
 			},
 		},
 	}

@@ -19,6 +19,9 @@ const (
 	// FreeForm is a text entry question
 	FreeForm = "FreeForm"
 
+	// YesNo is a boolean typed question
+	YesNo = "YesNo"
+
 	// File is a question that prompts a file upload
 	File = "File"
 )
@@ -26,10 +29,16 @@ const (
 // Question models a question in the survey
 type Question struct {
 	// ID is the unique identifier of the question
-	ID string
+	ID QuestionID
 
 	// MultiSelect is true if multiple choices are allowed for this question.
 	MultiSelect bool
+
+	// ShowOther shows the "other" option on multiple choice questions
+	ShowOther bool
+
+	// Skippable is true if the user can skip the question
+	Skippable bool
 
 	// Text is the text presented to the user to answer the question
 	Text string
@@ -44,14 +53,17 @@ type Question struct {
 	SuggestedAnswerFn func() string
 
 	// ShouldShowFn will be called if non-nil to optionally skip this question
-	ShouldShowFn func(responsesSoFar map[string]*Answer) bool
+	ShouldShowFn func(responsesSoFar map[QuestionID]*Answer) bool
 
 	// GetShellHistoryFn is called for file type questions to fetch the shell history
-	GetShellHistoryFn func(shellType shell.Type) *history.ShellHistory
+	// Accepts a an optional history file.  If omitted, uses the default history file
+	// for the shell type.
+	GetShellHistoryFn func(shellType shell.Type, historyFile *string) *history.ShellHistory
 }
 
 // Parse accepts an answer from the user and parses it into an io.Response
 func (q Question) Parse(answer string) *Answer {
+	answer = strings.TrimSpace(answer)
 	if q.Type == FreeForm && q.SuggestedAnswerFn != nil {
 		if len(answer) == 0 || strings.EqualFold(answer, "Y") {
 			return &Answer{
@@ -63,7 +75,10 @@ func (q Question) Parse(answer string) *Answer {
 	}
 
 	if len(answer) == 0 {
-		return &Answer{Question: q, IsDone: true, Skipped: true, SkipThanks: true}
+		if q.Skippable {
+			return &Answer{Question: q, IsDone: true, Skipped: true, SkipThanks: true}
+		}
+		return &Answer{Question: q, IsDone: false, Message: "Please enter an answer."}
 	}
 
 	if q.Type == MultipleChoice {
@@ -84,6 +99,17 @@ func (q Question) Parse(answer string) *Answer {
 		return &Answer{
 			Question: q, IsDone: true, IsOther: isOther,
 			Text: answer, SelectedOptions: selectedOptions}
+	}
+
+	if q.Type == YesNo {
+		if len(answer) == 0 {
+			answer = "Y"
+		}
+		if !strings.EqualFold(answer, "y") && !strings.EqualFold(answer, "n") {
+			return &Answer{Question: q, IsDone: false, Message: "Please enter either 'Y' or 'N'"}
+		}
+
+		return &Answer{Question: q, IsDone: true, Text: strings.ToUpper(answer)}
 	}
 
 	if q.Type == File {

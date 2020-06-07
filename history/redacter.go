@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/sha1"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -48,50 +50,27 @@ type RedactedCommand struct {
 	Timestamp time.Time
 }
 
-// GetRedactedShellHistory returns a model of the shell history for the given shell type
-// It searches for known history file locations, parses any files it finds, and returns
+// GetRedactedShellHistory returns a model of the shell history for the given shell type.
+// If historyFile is passed, it uses that.
+// Otherwise it searches for known history file locations, parses any files it finds, and returns
 // the associatedc model.
-func GetRedactedShellHistory(targetShellType shell.Type) *ShellHistory {
-	var history *ShellHistory
-	historyFilePaths := getHistoryFiles()
-	for _, historyFilePath := range historyFilePaths {
-		historyFile, openErr := os.Open(historyFilePath)
-		if openErr != nil {
-			fmt.Println("Error reading history file, skipping. ")
-			continue
+func GetRedactedShellHistory(targetShellType shell.Type, historyFilePath *string) (history *ShellHistory) {
+	if historyFilePath != nil {
+		history = RedactHistoryFile(historyFilePath, targetShellType)
+	} else {
+		historyFilePath, err := getHistoryFile(targetShellType)
+		if err != nil {
+			log.Println("Unable to locate history file for", targetShellType)
+			return
 		}
-		defer historyFile.Close()
-
-		shellType := shell.GetShellType(historyFile.Name())
-		if shellType == targetShellType {
-			history := &ShellHistory{
-				FileName:      historyFile.Name(),
-				ShellType:     shellType,
-				RedactedLines: make([]*RedactedCommand, 0)}
-
-			reader := bufio.NewReader(historyFile)
-			for {
-				line, readErr := reader.ReadString('\n')
-				if readErr != nil {
-					break
-				}
-				r := RedactLine(shellType, strings.TrimSpace(line))
-				if r != nil {
-					history.RedactedLines = append(history.RedactedLines, r)
-				}
-			}
-			return history
-		}
+		history = RedactHistoryFile(&historyFilePath, targetShellType)
 	}
-
-	return history
+	return
 }
 
-func getHistoryFiles() []string {
+func getHistoryFile(targetShellType shell.Type) (string, error) {
 	home := os.ExpandEnv("$HOME")
-	historyFiles := make([]string, 0)
 
-	// TODO: Are there more places to search for these files?
 	for _, dir := range []string{home, home + "/.local/share/fish/"} {
 		cmd := exec.Command("ls", "-a", dir)
 		var out bytes.Buffer
@@ -102,50 +81,102 @@ func getHistoryFiles() []string {
 		}
 		m := strings.Split(out.String(), "\n")
 		for _, fileName := range m {
-			if strings.Contains(fileName, "history") {
-				historyFiles = append(historyFiles, home+"/"+fileName)
+			if strings.Contains(fileName, "history") && targetShellType == shell.GetShellType(fileName) {
+				return dir + "/" + fileName, nil
 			}
 		}
 	}
 
-	return historyFiles
+	return "", errors.New("History file not found")
 }
 
-// Preview returns a single line preview of a command suitable for showing a user.
-func (r RedactedCommand) Preview() string {
-	preview := r.Command + " " + r.Subcommand
-	if len(r.Options) > 0 {
-		preview += " [flags: " + strings.Join(r.Options, ",") + "]"
-	}
-	return preview
-}
+// Fish format
+// - cmd: <cmd>
+//   when: <timestamp>
 
 // ZshHistoryLineRegEx parses a single line of a zsh history file.
+// Zsh format
+// : <timestamp>:0;<command>
 var ZshHistoryLineRegEx = regexp.MustCompile(`^: (\d+):\d+;(.*)$`)
 
-// RedactLine redacts a single line of a history file given a shell type
-// and returns the redacted command or nil if there was an error parsing
-func RedactLine(shellType shell.Type, line string) *RedactedCommand {
-	redacted := new(RedactedCommand)
-	redacted.Length = len(line)
-	if shellType == shell.Zsh {
-		// Split off the timestamp
-		res := ZshHistoryLineRegEx.FindStringSubmatch(line)
-		if len(res) < 2 {
-			// Error parsing, just skip
-			return nil
-		}
-		timestampSecs, err := strconv.Atoi(res[1])
-		if err != nil {
-			return nil
-		}
-		redacted.Timestamp = time.Unix(int64(timestampSecs), 0)
-		line = res[2]
-	}
+// Bash format if HISTTIMEFORMAT not set
+// <command>
 
-	splitLine, err := shellquote.Split(line)
-	if err != nil {
-		// log.Println("Unable to parse command, skipping", line)
+// Bash format if HISTTIMEFORMAT set
+// #<timestamp>
+// <command>
+
+// RedactHistoryFile redacts a single shell history file of the given shell type.
+// Returns nil if the history file and target shell type don't match
+func RedactHistoryFile(historyFilePath *string, targetShellType shell.Type) *ShellHistory {
+	log.Println("Reading history file", *historyFilePath)
+	historyFile, openErr := os.Open(*historyFilePath)
+	if openErr != nil {
+		fmt.Println("Error reading history file, skipping. ")
+		return nil
+	}
+	defer historyFile.Close()
+
+	shellType := shell.GetShellType(historyFile.Name())
+	if shellType == targetShellType {
+		history := &ShellHistory{
+			FileName:      historyFile.Name(),
+			ShellType:     shellType,
+			RedactedLines: make([]*RedactedCommand, 0)}
+
+		reader := bufio.NewReader(historyFile)
+
+		linesAtATime := 1
+		if shellType == shell.Fish {
+			linesAtATime = 2
+		}
+
+		i := 0
+		for {
+			lines := make([]string, 0)
+			line, err := reader.ReadString('\n')
+			if err == io.EOF {
+				break
+			} else if err != nil {
+				log.Println("Error reading history file", err)
+				return nil
+			}
+			lines = append(lines, strings.TrimSpace(line))
+			if i == 0 && shellType == shell.Bash && line[0] == '#' {
+				// Bash is recording timestamps in history file
+				linesAtATime = 2
+			}
+			if linesAtATime == 2 && i%2 == 0 {
+				line, readErr := reader.ReadString('\n')
+				if readErr != nil {
+					log.Println("Error reading history file, skipping.")
+				}
+				lines = append(lines, strings.TrimSpace(line))
+			}
+			r := RedactCommand(shellType, lines)
+			if r != nil {
+				history.RedactedLines = append(history.RedactedLines, r)
+			}
+			i += linesAtATime
+		}
+		return history
+	}
+	return nil
+}
+
+// RedactCommand redacts a single line of a history file given a shell type
+// and returns the redacted command or nil if there was an error parsing
+func RedactCommand(shellType shell.Type, lines []string) *RedactedCommand {
+	// log.Println("redacting lines", shellType, lines)
+
+	commandTime, commandLine := ParseLines(shellType, lines)
+	redacted := new(RedactedCommand)
+	redacted.Length = len(commandLine)
+	redacted.Timestamp = commandTime
+
+	splitLine, err := shellquote.Split(commandLine)
+	if err != nil || len(splitLine) == 0 {
+		// log.Println("Unable to parse command line, skipping", commandLine)
 		return nil
 	}
 
@@ -158,7 +189,7 @@ func RedactLine(shellType shell.Type, line string) *RedactedCommand {
 	}
 	parser := flags.NewNamedParser(command, flags.None)
 
-	redacted.Sha1 = getSha1Hex(line)
+	redacted.Sha1 = getSha1Hex(commandLine)
 	redacted.NumTokens = len(splitLine)
 	redacted.Command = command
 	redacted.Subcommand = subcommand
@@ -177,6 +208,49 @@ func RedactLine(shellType shell.Type, line string) *RedactedCommand {
 	}
 
 	return redacted
+}
+
+// ParseLines takes 1 or 2 lines of history file and returns
+// the command line and timestamp, if one was present
+func ParseLines(shellType shell.Type, lines []string) (commandTime time.Time, command string) {
+	switch shellType {
+	case shell.Zsh:
+		// Split off the timestamp
+		res := ZshHistoryLineRegEx.FindStringSubmatch(lines[0])
+		if len(res) < 2 {
+			// Error parsing, just skip
+			return
+		}
+		timestampSecs, err := strconv.Atoi(res[1])
+		if err != nil {
+			return
+		}
+		commandTime = time.Unix(int64(timestampSecs), 0)
+		command = res[2]
+	case shell.Bash:
+		if len(lines) == 1 {
+			command = lines[0]
+		} else {
+			timestampSecs, err := strconv.Atoi(lines[0][1:])
+			if err != nil {
+				return
+			}
+			commandTime = time.Unix(int64(timestampSecs), 0)
+			command = lines[1]
+		}
+	case shell.Fish:
+		log.Println()
+	}
+	return
+}
+
+// Preview returns a single line preview of a command suitable for showing a user.
+func (r *RedactedCommand) Preview() string {
+	preview := r.Command + " " + r.Subcommand
+	if len(r.Options) > 0 {
+		preview += " [flags: " + strings.Join(r.Options, ",") + "]"
+	}
+	return preview
 }
 
 func getSha1Hex(line string) string {

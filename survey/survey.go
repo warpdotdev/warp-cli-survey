@@ -26,7 +26,8 @@ var positives = []string{
 }
 
 // Start runs the survey and writes responses to the storer
-func Start(storage store.Storer, respondentID string) {
+// historyFilePath is an optional argument specifying a history file to read
+func Start(storage store.Storer, respondentID string, historyFilePath *string) {
 	fmt.Println("\n> Welcome to the Project Denver survey! 👋")
 	fmt.Println("> This should take no more than 5-10 minutes. ⏲")
 	fmt.Println("\n> At Denver we are building a modern, collaborative command-line terminal for all developers.")
@@ -37,12 +38,12 @@ func Start(storage store.Storer, respondentID string) {
 	fmt.Println("> https://github.com/zachlloyd/denver-survey-client")
 	fmt.Println("\n> Let's get started...")
 
-	responsesByQuestionID := map[string]*io.Answer{}
+	responsesByQuestionID := map[io.QuestionID]*io.Answer{}
 	reader := bufio.NewReader(os.Stdin)
 	questions := io.Questions()
 	for i, q := range questions {
 		if q.ShouldShowFn == nil || q.ShouldShowFn(responsesByQuestionID) {
-			response := getValidAnswer(reader, q, responsesByQuestionID)
+			response := getValidAnswer(reader, q, responsesByQuestionID, historyFilePath)
 			if response != nil {
 				responsesByQuestionID[q.ID] = response
 				if !response.Skipped {
@@ -59,7 +60,7 @@ func Start(storage store.Storer, respondentID string) {
 // Shows the response prompt until the user has selected a valid answer
 // and returns that answer
 func getValidAnswer(reader *bufio.Reader, q io.Question,
-	responsesByQuestionID map[string]*io.Answer) *io.Answer {
+	responsesByQuestionID map[io.QuestionID]*io.Answer, historyFilePath *string) *io.Answer {
 	var response *io.Answer
 	for {
 		printQuestion(q)
@@ -73,7 +74,7 @@ func getValidAnswer(reader *bufio.Reader, q io.Question,
 		}
 
 		if response.PreviewFile {
-			previewFile(reader, q, response, responsesByQuestionID)
+			previewFile(reader, q, response, responsesByQuestionID, historyFilePath)
 		}
 
 		if response.IsDone {
@@ -87,9 +88,16 @@ func getValidAnswer(reader *bufio.Reader, q io.Question,
 	}
 }
 
-func previewFile(reader *bufio.Reader, q io.Question, response *io.Answer, responsesByQuestionID map[string]*io.Answer) {
-	shellAnswer := responsesByQuestionID["shell_type"].Text
-	history := q.GetShellHistoryFn(shell.GetShellType(shellAnswer))
+func previewFile(reader *bufio.Reader, q io.Question, response *io.Answer,
+	responsesByQuestionID map[io.QuestionID]*io.Answer, historyFilePath *string) {
+	var shellType shell.Type
+	if historyFilePath != nil {
+		shellType = shell.GetShellType(*historyFilePath)
+	} else {
+		shellAnswer := responsesByQuestionID["shell_type"].Text
+		shellType = shell.GetShellType(shellAnswer)
+	}
+	history := q.GetShellHistoryFn(shellType, historyFilePath)
 	fmt.Print("\nHere's a preview of your shell history file (",
 		history.FileName, ") with options and arguments stripped:\n\n")
 
@@ -134,19 +142,29 @@ func previewFile(reader *bufio.Reader, q io.Question, response *io.Answer, respo
 }
 
 func printQuestion(q io.Question) {
-	fmt.Print("> ", q.Text, "\n\n")
+	fmt.Print("> ", q.Text)
+
+	if q.Type == io.YesNo {
+		fmt.Print(" [Y / n]")
+	}
+
+	fmt.Print("\n\n")
 	if q.Type == io.MultipleChoice || q.Type == io.File {
 		for j, v := range q.Values {
 			fmt.Println(color.GreenString(strconv.Itoa(j+1)), v)
 		}
 
 		if q.Type == io.MultipleChoice {
-			fmt.Println(color.GreenString(strconv.Itoa(len(q.Values)+1)), "Other")
+			endValue := len(q.Values)
+			if q.ShowOther {
+				endValue++
+				fmt.Println(color.GreenString(strconv.Itoa(endValue)), "Other")
+			}
 			if q.MultiSelect {
-				fmt.Println("Please enter a number between 1 -", strconv.Itoa(len(q.Values)+1),
+				fmt.Print("Please enter a number between 1 -", endValue,
 					", or multiple choices separated by commas.")
 			} else {
-				fmt.Println("Please enter a number between 1 -", strconv.Itoa(len(q.Values)+1), ".")
+				fmt.Print("Please enter a number between 1 -", endValue, ".")
 			}
 		}
 	}

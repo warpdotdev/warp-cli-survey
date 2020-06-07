@@ -51,7 +51,7 @@ func (r *Answer) Response(respondentID string, questionNum int) store.Response {
 	return store.Response{
 		RespondentID: respondentID,
 		QuestionNum:  questionNum,
-		QuestionID:   r.Question.ID,
+		QuestionID:   string(r.Question.ID),
 		Answers:      r.getAnswers(respondentID, questionNum),
 		HistoryLines: r.getHistoryLines(respondentID),
 	}
@@ -64,7 +64,7 @@ func (r *Answer) getAnswers(respondentID string, questionNum int) []store.Answer
 		return []store.Answer{{
 			RespondentID: respondentID,
 			QuestionNum:  questionNum,
-			QuestionID:   q.ID,
+			QuestionID:   string(q.ID),
 			QuestionText: q.Text,
 			Answer:       r.Text,
 			IsOther:      r.IsOther}}
@@ -74,7 +74,7 @@ func (r *Answer) getAnswers(respondentID string, questionNum int) []store.Answer
 			answers = append(answers, store.Answer{
 				RespondentID: respondentID,
 				QuestionNum:  questionNum,
-				QuestionID:   q.ID,
+				QuestionID:   string(q.ID),
 				QuestionText: q.Text,
 				Answer:       option,
 				IsOther:      false})
@@ -83,7 +83,7 @@ func (r *Answer) getAnswers(respondentID string, questionNum int) []store.Answer
 			answers = append(answers, store.Answer{
 				RespondentID: respondentID,
 				QuestionNum:  questionNum,
-				QuestionID:   q.ID,
+				QuestionID:   string(q.ID),
 				QuestionText: q.Text,
 				Answer:       r.OtherValue,
 				IsOther:      true})
@@ -104,7 +104,7 @@ func (r Answer) getHistoryLines(respondentID string) []store.HistoryLine {
 		if record != nil {
 			historyRecords = append(historyRecords, store.HistoryLine{
 				RespondentID:     respondentID,
-				QuestionID:       r.Question.ID,
+				QuestionID:       string(r.Question.ID),
 				FileName:         history.FileName,
 				ShellType:        history.ShellType,
 				LineNum:          i,
