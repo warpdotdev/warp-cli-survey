@@ -5,6 +5,11 @@
 # Usage:
 #   source <(curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh)
 
+case "$-" in
+*i*)	echo This shell is interactive ;;
+*)	echo This shell is not interactive ;;
+esac
+
 VERSION="0.1.3"
 
 set -e
