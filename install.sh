@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash --init-file
 #
 # Denver Survey installer
 #
@@ -31,5 +31,3 @@ function run_denver_survey() {
 }
 
 run_denver_survey
-
-
