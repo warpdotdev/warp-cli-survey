@@ -2,6 +2,7 @@ package survey
 
 import (
 	"bufio"
+	"log"
 	"time"
 
 	"fmt"
@@ -85,7 +86,10 @@ func getValidAnswer(reader *bufio.Reader, q io.Question,
 	var response *io.Answer
 	for {
 		printQuestion(q)
-		text, _ := reader.ReadString('\n')
+		text, err := reader.ReadString('\n')
+		if err != nil {
+			log.Println("Error reading answer", err)
+		}
 		response = q.Parse(strings.TrimSpace(text))
 
 		if response.IsOther {
