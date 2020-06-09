@@ -77,7 +77,8 @@ func getHistoryFile(targetShellType shell.Type) (string, error) {
 		cmd.Stdout = &out
 		err := cmd.Run()
 		if err != nil {
-			log.Fatal(err)
+			log.Println("Error searching for history file in dir", dir, err)
+			continue
 		}
 		m := strings.Split(out.String(), "\n")
 		for _, fileName := range m {
@@ -112,7 +113,7 @@ func RedactHistoryFile(historyFilePath *string, targetShellType shell.Type) *She
 	log.Println("Reading history file", *historyFilePath)
 	historyFile, openErr := os.Open(*historyFilePath)
 	if openErr != nil {
-		fmt.Println("Error reading history file, skipping. ")
+		log.Println("Error reading history file, skipping. ")
 		return nil
 	}
 	defer historyFile.Close()
@@ -142,9 +143,16 @@ func RedactHistoryFile(historyFilePath *string, targetShellType shell.Type) *She
 				return nil
 			}
 			lines = append(lines, strings.TrimSpace(line))
-			if i == 0 && shellType == shell.Bash && line[0] == '#' {
-				// Bash is recording timestamps in history file
-				linesAtATime = 2
+			if shellType == shell.Bash {
+				if line[0] == '#' {
+					// Looks like HISTTIMEFORMAT has been set, so parse two lines at a time.
+					_, err := strconv.Atoi(lines[0][1:])
+					if err == nil {
+						linesAtATime = 2
+					}
+				} else {
+					linesAtATime = 1
+				}
 			}
 			if linesAtATime == 2 && i%2 == 0 {
 				line, readErr := reader.ReadString('\n')
@@ -167,7 +175,7 @@ func RedactHistoryFile(historyFilePath *string, targetShellType shell.Type) *She
 // RedactCommand redacts a single line of a history file given a shell type
 // and returns the redacted command or nil if there was an error parsing
 func RedactCommand(shellType shell.Type, lines []string) *RedactedCommand {
-	// log.Println("redacting lines", shellType, lines)
+	log.Println("redacting lines", shellType, lines)
 
 	commandTime, commandLine := ParseLines(shellType, lines)
 	redacted := new(RedactedCommand)
@@ -203,7 +211,7 @@ func RedactCommand(shellType shell.Type, lines []string) *RedactedCommand {
 	}
 	_, err = parser.ParseArgs(splitLine[argsIdx:])
 	if err != nil {
-		fmt.Printf("Error parsing command line %v\n", err)
+		log.Printf("Error parsing command line %v\n", err)
 		return nil
 	}
 

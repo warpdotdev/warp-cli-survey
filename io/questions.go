@@ -97,7 +97,7 @@ var questionMap = map[QuestionID]Question{
 		Text: "Can we take a look at your shell history to get a better sense of how you use the CLI?\n> We will strip out all sensitive information first.",
 		Type: File,
 		Values: []string{
-			"Yes (we will show you a preview first)",
+			"Yes (we will show you a preview)",
 			"No"},
 		GetShellHistoryFn: history.GetRedactedShellHistory,
 		ShouldShowFn: func(responsesSoFar map[QuestionID]*Answer) bool {

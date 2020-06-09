@@ -2,7 +2,7 @@
 #
 # Builds the Denver client survey tar archives for release
 
-VERSION=0.1.3
+VERSION=0.1.4
 
 set -e -x
 
