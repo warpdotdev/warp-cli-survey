@@ -175,7 +175,7 @@ func RedactHistoryFile(historyFilePath *string, targetShellType shell.Type) *She
 // RedactCommand redacts a single line of a history file given a shell type
 // and returns the redacted command or nil if there was an error parsing
 func RedactCommand(shellType shell.Type, lines []string) *RedactedCommand {
-	log.Println("redacting lines", shellType, lines)
+	// log.Println("redacting lines", shellType, lines)
 
 	commandTime, commandLine := ParseLines(shellType, lines)
 	redacted := new(RedactedCommand)
