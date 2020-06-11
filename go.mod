@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
+	github.com/rollbar/rollbar-go v1.2.0
 	github.com/schollz/progressbar/v3 v3.3.3
 	github.com/stretchr/testify v1.5.1
 	github.com/urfave/cli v1.22.4

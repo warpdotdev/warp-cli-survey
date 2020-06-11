@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/google/uuid"
+	"github.com/rollbar/rollbar-go"
 	"github.com/urfave/cli"
 	"github.com/zachlloyd/denver-survey-client/store"
 	"github.com/zachlloyd/denver-survey-client/survey"
@@ -18,16 +19,27 @@ func main() {
 	var serverRoot string
 	var historyFile string
 
+	rollbar.SetToken("6754ea1d67794cc8b92d2855ac3a45db")
+	rollbar.SetEnvironment("production")
+	rollbar.SetCodeVersion("0.1.6")
+	rollbar.SetServerRoot("github.com/zachlloyd/denver-survey-client")
+	rollbar.Info("Starting new survey...")
+
 	app := &cli.App{
 		Name:  "survey",
 		Usage: "Run the Project Denver survey",
 		Action: func(c *cli.Context) error {
-			storage = store.NewWebStore(serverRoot)
-			respondentID = uuid.New().String()
-			if len(historyFile) == 0 {
-				survey.Start(storage, respondentID, nil)
-			} else {
-				survey.Start(storage, respondentID, &historyFile)
+			err := rollbar.WrapAndWait(func() {
+				storage = store.NewWebStore(serverRoot)
+				respondentID = uuid.New().String()
+				if len(historyFile) == 0 {
+					survey.Start(storage, respondentID, nil)
+				} else {
+					survey.Start(storage, respondentID, &historyFile)
+				}
+			})
+			if err != nil {
+				return cli.NewExitError(err, 1)
 			}
 			return nil
 		},
@@ -49,6 +61,6 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Fatal error :( Sorry for the trouble - we will take a look...", err)
 	}
 }
