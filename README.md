@@ -22,10 +22,6 @@ We will keep this data confidential, but will share an aggregate data set once w
 
 By filling it out, you are helping us build a better product, and we very much appreciate that.
 
-# To Install and Run
-
-`curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey`
-
 # What personal info does it collect?
 
 Only what you tell us.
