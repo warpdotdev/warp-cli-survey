@@ -1,6 +1,4 @@
-# tl; dr
-
-## To install and run
+# To install and run
 
 `curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey`
 
