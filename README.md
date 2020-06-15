@@ -26,9 +26,9 @@ By filling it out, you are helping us build a better product, and we very much a
 
 `curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey`
 
-# Is it safe to run?
+# What personal info does it collect?
 
-Yes.  But please take a look at the code yourself if you have any concerns.
+Only what you tell us.
 
 Leaving your email is optional - so feel free to omit if you want the survey results to be *anonymous*.
 
