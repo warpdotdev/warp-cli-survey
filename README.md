@@ -8,7 +8,7 @@ This repo contains code for the Denver CLI survey.  You really only should be ru
 
 It's open source so that you can look at the code yourself and make sure we aren't doing anything fishy 🐠
 
-If you want more info, please email zach@denverterm.com
+If you want more info, please email zach@denver.team
 
 # What is Denver?
 Denver is reimagining the command-line terminal as a modern, collaborative app.  
