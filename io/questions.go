@@ -17,9 +17,11 @@ const (
 	platformDevelopOn             = "platform_develop_on"
 	platformDevelopFor            = "platform_develop_for"
 
-	shellType    = "shell_type"
-	shellHistory = "shell_history"
-	terminalType = "terminal_type"
+	shellType       = "shell_type"
+	whyThatShell    = "why_that_shell"
+	shellHistory    = "shell_history"
+	terminalType    = "terminal_type"
+	whyThatTerminal = "why_that_terminal"
 
 	codeEditor         = "code_editor"
 	levelOfExpertise   = "level_of_expertise"
@@ -28,11 +30,14 @@ const (
 	numGithubRepos     = "num_github_repos"
 	otherTools         = "other_tools"
 
-	wantImproved     = "want_improved"
-	biggestPainPoint = "biggest_pain_point"
-	payFor           = "pay_for"
-	email            = "email"
-	okToReachOut     = "ok_to_reach_out"
+	mainReasonForUsingCLI = "main_reason_for_using_cli"
+	wantImproved          = "want_improved"
+	biggestPainPoint      = "biggest_pain_point"
+	payFor                = "pay_for"
+
+	// Email is the email address question
+	Email        = "email"
+	okToReachOut = "ok_to_reach_out"
 )
 
 // Questions returns a list of all questions in the survey
@@ -46,25 +51,29 @@ func Questions() []Question {
 		m[platformDevelopFor],
 
 		m[terminalType],
+		m[whyThatTerminal],
 		m[levelOfExpertise],
 		m[frequencyOfUse],
 		m[numTerminalWindows],
 		m[numGithubRepos],
 		m[shellType],
+		m[whyThatShell],
 		m[shellHistory],
 		m[codeEditor],
 		m[otherTools],
 
+		m[mainReasonForUsingCLI],
 		m[biggestPainPoint],
 		m[payFor],
-		m[email],
+		m[wantImproved],
+		m[Email],
 		m[okToReachOut],
 	}
 }
 
 var questionMap = map[QuestionID]Question{
 	company:           {ID: company, Text: "What company do you work at?", Type: FreeForm},
-	yearsOfExperience: {ID: yearsOfExperience, Text: "How many years experience do you have?", Type: FreeForm},
+	yearsOfExperience: {ID: yearsOfExperience, Text: "How many years experience using the CLI do you have?", Type: FreeForm},
 	role: {ID: role, Text: "Which of these best describes your role?", Type: MultipleChoice, ShowOther: true,
 		Values: []string{
 			"Software Engineer",
@@ -85,7 +94,7 @@ var questionMap = map[QuestionID]Question{
 			"Linux / Unix (server / backend)",
 			"Web / Frontend",
 			"iOS",
-			"AndroId",
+			"Android",
 			"Windows",
 			"Mac"}},
 
@@ -93,11 +102,17 @@ var questionMap = map[QuestionID]Question{
 		SuggestedAnswerFn: func() string {
 			return os.ExpandEnv("$SHELL")
 		}},
+	whyThatShell: {ID: whyThatShell, Text: "Anything in particular that made you pick that shell?",
+		Type: FreeForm},
 	shellHistory: {ID: shellHistory,
-		Text: "Can we take a look at your shell history to get a better sense of how you use the CLI?\n> We will strip out all sensitive information first.",
+		Text: `Can we take a look at your shell history to get a better sense of how you use the CLI?
+> We will strip out all sensitive information first.
+
+** Is this safe? Yes, the data is sanitized and you can see exactly what we will store beforehand.
+** But we get that this could be scary, so it's totally up to you if you share (although it would be helpful!)`,
 		Type: File,
 		Values: []string{
-			"Yes (we will show you a preview)",
+			"Yes (shows a preview before submitting)",
 			"No"},
 		GetShellHistoryFn: history.GetRedactedShellHistory,
 		ShouldShowFn: func(responsesSoFar map[QuestionID]*Answer) bool {
@@ -114,6 +129,8 @@ var questionMap = map[QuestionID]Question{
 			"Windows Command Line",
 			"PowerShell",
 			"A linux terminal (e.g. Gnome)"}},
+	whyThatTerminal: {ID: whyThatTerminal, Text: "Anything in particular that made you pick that terminal?",
+		Type: FreeForm},
 
 	levelOfExpertise: {ID: levelOfExpertise, Text: "How experienced of a command-line user are you?", Type: MultipleChoice,
 		Values: []string{
@@ -133,7 +150,7 @@ var questionMap = map[QuestionID]Question{
 		Values: []string{
 			"Zero",
 			"One total",
-			"One per project I'm woking on",
+			"One per project I'm working on",
 			"Multiple per project",
 			"The one embedded in my IDE"}},
 
@@ -163,6 +180,8 @@ var questionMap = map[QuestionID]Question{
 			"ohmyzsh",
 			"a dotfiles repo",
 			"None"}},
+	mainReasonForUsingCLI: {ID: mainReasonForUsingCLI, Text: "What's the main reason you use the CLI?",
+		Type: FreeForm},
 	wantImproved: {ID: wantImproved, Text: "What would you most like to see improved in the command-line experience?",
 		Type: MultipleChoice, MultiSelect: true, ShowOther: true,
 		Values: []string{
@@ -177,7 +196,7 @@ var questionMap = map[QuestionID]Question{
 		Type: FreeForm},
 	payFor: {ID: payFor, Text: "Is there an improvement to the command-line you would pay $10 / mo for?  If so, please tell us about it.",
 		Type: FreeForm},
-	email: {ID: email, Text: "Could we have your email to send you the survey results?",
+	Email: {ID: Email, Text: "Could we have your email to send you the survey results?",
 		Type: FreeForm, Skippable: true},
 	okToReachOut: {ID: okToReachOut, Text: "We'd love to reach out and pick your brain on the product - is that OK?",
 		Type: YesNo, HasDefault: true},

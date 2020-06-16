@@ -3,6 +3,7 @@ package survey
 import (
 	"bufio"
 	"log"
+	"regexp"
 	"time"
 
 	"fmt"
@@ -13,12 +14,15 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/schollz/progressbar/v3"
+	"github.com/zachlloyd/denver-survey-client/history"
 	"github.com/zachlloyd/denver-survey-client/io"
 	"github.com/zachlloyd/denver-survey-client/shell"
 	"github.com/zachlloyd/denver-survey-client/store"
 )
 
-const filePreviewLines = 20
+const filePreviewLines = 40
+
+var emailRegEx = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
 // Positive thank yous for answering a question
 var positives = []string{
@@ -30,14 +34,14 @@ var positives = []string{
 
 // Start runs the survey and writes responses to the storer
 // historyFilePath is an optional argument specifying a history file to read
-func Start(storage store.Storer, respondentID string, historyFilePath *string) {
+func Start(storage store.Storer, emailer *store.Emailer, respondentID string, historyFilePath *string) {
 	fmt.Println("\n> Welcome to the Project Denver survey! 👋")
 	fmt.Println("> This should take no more than 5-10 minutes. ⏲")
 	fmt.Println("\n> At Denver we are building a modern, collaborative command-line terminal for all developers.")
 	fmt.Println("> The goal of the survey is to better understand how today's developer uses the CLI ✅")
 	fmt.Println("> At the end of the survey, you can leave your email and we will send you the results. 📈")
-	fmt.Println("> For more info on Denver, please check out <website here> 🕸️")
-	fmt.Println("\n> Code for the survey is open-source. Feel free to check it out to make sure it isn't doing anything fishy.")
+	// fmt.Println("> For more info on Denver, please check out https://denver.team 🕸️")
+	fmt.Println("\n> Code for the survey is open-source. Feel free to check it out to make sure it isn't doing anything fishy. 🐠")
 	fmt.Println("> https://github.com/zachlloyd/denver-survey-client")
 	fmt.Println("\n> Let's get started...")
 
@@ -76,7 +80,41 @@ func Start(storage store.Storer, respondentID string, historyFilePath *string) {
 		}
 	}
 
+	summary := summarizeResponses(responsesByQuestionID)
+	emailA := responsesByQuestionID[io.Email]
+	if emailRegEx.MatchString(emailA.Text) {
+		emailer.SendSummaryEmail(emailA.Text, summary)
+	}
+	// fmt.Println(summary)
+
+	fmt.Println("\n If you're interested in joining our slack or contributing to the project, please reach out to zach@denver.team")
 	fmt.Println("\n🙏  That's it, thanks for taking the time! 🙏")
+}
+
+func summarizeResponses(responsesByQuestionID map[io.QuestionID]*io.Answer) string {
+	var b strings.Builder
+
+	questions := io.Questions()
+	for _, q := range questions {
+		a := responsesByQuestionID[q.ID]
+		b.WriteString("> " + q.Text + "\n")
+		switch q.Type {
+		case io.FreeForm, io.YesNo:
+			b.WriteString(a.Text + "\n")
+		case io.File:
+			if a.History == nil {
+				b.WriteString("<No history file uploaded>\n")
+			} else {
+				b.WriteString("Uploaded " + strconv.Itoa(len(a.History.RedactedLines)) + " redacted commands\n")
+			}
+		case io.MultipleChoice:
+			for _, option := range a.SelectedOptions {
+				b.WriteString(option + "\n")
+			}
+		}
+		b.WriteString("\n")
+	}
+	return b.String()
 }
 
 // Shows the response prompt until the user has selected a valid answer
@@ -104,7 +142,11 @@ func getValidAnswer(reader *bufio.Reader, q io.Question,
 
 		if response.IsDone {
 			if !response.SkipThanks {
-				fmt.Println(positives[rand.Intn(len(positives))])
+				if len(response.CustomThanks) > 0 {
+					fmt.Println(response.CustomThanks)
+				} else {
+					fmt.Println(positives[rand.Intn(len(positives))])
+				}
 			}
 			return response
 		}
@@ -124,46 +166,45 @@ func previewFile(reader *bufio.Reader, q io.Question, response *io.Answer,
 	}
 	history := q.GetShellHistoryFn(shellType, historyFilePath)
 	fmt.Print("\nHere's a preview of your shell history file (",
-		history.FileName, ") with options and arguments stripped:\n\n")
+		history.FileName, " ", len(history.RedactedLines), " total commands) with options and arguments stripped:\n\n")
 
-	for i, redactedCmd := range history.RedactedLines {
-		fmt.Println(redactedCmd.Preview())
-		if i > filePreviewLines {
-			fmt.Print("... plus ", len(history.RedactedLines)-i, " other redacted commands.\n\n")
-			break
-		}
-	}
-	fmt.Println("Does this look OK to upload? [Y (yes, ok) / a (show all of the commands) / n (no, please don't upload)]")
-	shareFile, err := reader.ReadString('\n')
-	if err != nil {
-		fmt.Println("Oops, error reading your input. We won't upload it.")
-		response.SkipThanks = true
-		return
-	}
-
-	trimmed := strings.TrimSpace(shareFile)
-	if strings.EqualFold(trimmed, "a") {
-		for i, redactedCmd := range history.RedactedLines {
-			if i > filePreviewLines {
-				fmt.Println(redactedCmd.Preview())
-			}
-		}
-		fmt.Println("\n> Does this look OK to upload? [Y (yes, ok) / n (no, please don't upload)]")
-		shareFile, err = reader.ReadString('\n')
+	start := 0
+	for {
+		printHistoryRange(history, start, start+filePreviewLines)
+		fmt.Println("Does this look OK to upload? [Y (yes, ok) / m (show more of the commands) / n (no, please don't upload)]")
+		shareFileResponse, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("Oops, error reading your input. We won't upload it.")
 			response.SkipThanks = true
 			return
 		}
-		trimmed = strings.TrimSpace(shareFile)
+
+		trimmed := strings.TrimSpace(shareFileResponse)
+		if strings.EqualFold(trimmed, "m") {
+			start += filePreviewLines
+		} else if len(trimmed) == 0 || strings.EqualFold(trimmed, "Y") {
+			response.History = history
+			break
+		} else {
+			fmt.Println("Ok, no problem, we won't upload it.")
+			response.SkipThanks = true
+			break
+		}
 	}
 
-	if len(trimmed) == 0 || strings.EqualFold(trimmed, "Y") {
-		response.History = history
-	} else {
-		fmt.Println("Ok, no problem, we won't upload it.")
-		response.SkipThanks = true
+}
+
+func printHistoryRange(history *history.ShellHistory, start int, end int) {
+	if end > len(history.RedactedLines) {
+		end = len(history.RedactedLines)
 	}
+	if start >= end {
+		start = end
+	}
+	for _, redactedCmd := range history.RedactedLines[start:end] {
+		fmt.Println(redactedCmd.Preview())
+	}
+	fmt.Print("... plus ", len(history.RedactedLines)-end, " other redacted commands.\n\n")
 }
 
 func printQuestion(q io.Question) {

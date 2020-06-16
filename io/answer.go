@@ -19,6 +19,9 @@ type Answer struct {
 	// SkipThanks is true if we should skip thanking the user for their response
 	SkipThanks bool
 
+	// CustomThanks is a custom thank you message
+	CustomThanks string
+
 	// Message should be displayed to the user if non-nil
 	Message string
 

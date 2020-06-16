@@ -121,7 +121,13 @@ func (q Question) Parse(answer string) *Answer {
 			return &Answer{Question: q, IsDone: false, Message: "Please choose an available option."}
 		}
 
-		return &Answer{Question: q, IsDone: true, Text: q.Values[choiceNum-1], PreviewFile: choiceNum == 1}
+		if choiceNum == 1 {
+			return &Answer{Question: q, IsDone: true, Text: q.Values[choiceNum-1], PreviewFile: true}
+		} else {
+			return &Answer{Question: q, IsDone: true, Text: q.Values[choiceNum-1], PreviewFile: false,
+				CustomThanks: "Ok, no problem we won't upload it."}
+		}
+
 	}
 
 	return &Answer{Question: q, IsDone: true, Text: answer}

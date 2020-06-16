@@ -225,16 +225,18 @@ func ParseLines(shellType shell.Type, lines []string) (commandTime time.Time, co
 	case shell.Zsh:
 		// Split off the timestamp
 		res := ZshHistoryLineRegEx.FindStringSubmatch(lines[0])
-		if len(res) < 2 {
-			// Error parsing, just skip
-			return
+		if len(res) >= 2 {
+			timestampSecs, err := strconv.Atoi(res[1])
+			if err != nil {
+				return
+			}
+			commandTime = time.Unix(int64(timestampSecs), 0)
+			command = res[2]
+		} else {
+			// Assume this is the non-timestamped zsh format
+			command = lines[0]
 		}
-		timestampSecs, err := strconv.Atoi(res[1])
-		if err != nil {
-			return
-		}
-		commandTime = time.Unix(int64(timestampSecs), 0)
-		command = res[2]
+
 	case shell.Bash:
 		if len(lines) == 1 {
 			command = lines[0]

@@ -20,9 +20,10 @@ func (ws *webStore) Write(response Response) {
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(response)
 
-	resp, err := http.Post(ws.serverRoot, "application/json", b)
+	resp, err := http.Post(ws.serverRoot+"/answer", "application/json", b)
 	if err != nil {
-		log.Println("Unable to save response...are you online?", err)
+		log.Println("Unable to save response. Mind connecting to the internet and trying again?")
+		return
 	}
 
 	defer resp.Body.Close()

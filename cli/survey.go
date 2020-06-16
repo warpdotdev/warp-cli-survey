@@ -14,7 +14,6 @@ import (
 const surveyMasterURL = "https://server-master-zonhtougpa-uc.a.run.app"
 
 func main() {
-	var storage store.Storer
 	var respondentID string
 	var serverRoot string
 	var historyFile string
@@ -30,12 +29,13 @@ func main() {
 		Usage: "Run the Project Denver survey",
 		Action: func(c *cli.Context) error {
 			err := rollbar.WrapAndWait(func() {
-				storage = store.NewWebStore(serverRoot)
+				storage := store.NewWebStore(serverRoot)
+				emailer := store.NewEmailer(serverRoot)
 				respondentID = uuid.New().String()
 				if len(historyFile) == 0 {
-					survey.Start(storage, respondentID, nil)
+					survey.Start(storage, emailer, respondentID, nil)
 				} else {
-					survey.Start(storage, respondentID, &historyFile)
+					survey.Start(storage, emailer, respondentID, &historyFile)
 				}
 			})
 			if err != nil {
