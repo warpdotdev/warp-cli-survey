@@ -73,7 +73,6 @@ func Start(storage store.Storer, emailer *store.Emailer, respondentID string, hi
 							time.Sleep(40 * time.Millisecond)
 						}
 					}
-
 				}
 			}
 			fmt.Println()

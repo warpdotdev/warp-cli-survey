@@ -5,7 +5,7 @@
 # Usage:
 #   curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey
 
-VERSION="0.1.6"
+VERSION="0.1.7"
 
 set -e
 
