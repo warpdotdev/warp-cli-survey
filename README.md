@@ -1,34 +1,33 @@
-# To install and run
+# tl; dr: To install and run
 
 `curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey`
-
-# What is this scary code I'm about to run...
-
-This repo contains code for the Denver CLI survey.  You really only should be running this if you have some connection to Denver or someone you trust asked you to fill it out.
-
-It's open source so that you can look at the code yourself and make sure we aren't doing anything fishy 🐠
-
-If you want more info, please email zach@denver.team
 
 # What is Denver?
 Denver is reimagining the command-line terminal as a modern, collaborative app.  
 
-The core of denver will be a new, open-source terminal.  It's not ready just yet.
+The core of Denver will be a new, open-source terminal.  It's not ready just yet.
 
-# What is the Denver CLI survey?
-We are very early and are gathering data from developers on how they use the CLI and what their biggest pain points are.
+You can sign up to follow progress at https://denver.team
+
+# What is this code I'm about to run...
+This repo contains code for the Denver CLI survey.  The survey asks a number of questions about command-line usage (see below for full list).  The goal is to put together some concrete data to help drive product direction.
+
+You only should be running this if you have some connection to Denver or someone you trust asked you to fill it out.
+
+It's open source so that you can look at the code yourself and make sure we aren't doing anything fishy 🐠
 
 We will keep this data confidential, but will share an aggregate data set once we have enough samples.
 
 By filling it out, you are helping us build a better product, and we very much appreciate that.
 
-# What personal info does it collect?
+If you want more info, please email zach@denver.team
 
+# What personal info does it collect?
 Only what you tell us.
 
-Leaving your email is optional - so feel free to omit if you want the survey results to be *anonymous*.
+Leaving your email is optional - so feel free to omit if you want the survey results to be *anonymous*.  But if you leave it we will send you your results and a view of the aggregate data as well.
 
-Uploading your shell history is also optional.  Even if you do upload it, we *redact* all arguments and flag values first.
+Uploading your shell history is also optional.  If you do upload it, we *redact* all arguments and flag values first.
 
 # Why is this built as a CLI app rather than a SurveyMonkey or Typescript form?
 
