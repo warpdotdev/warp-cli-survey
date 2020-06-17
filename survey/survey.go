@@ -40,7 +40,7 @@ func Start(storage store.Storer, emailer *store.Emailer, respondentID string, hi
 	fmt.Println("\n> At Denver we are building a modern, collaborative command-line terminal for all developers.")
 	fmt.Println("> The goal of the survey is to better understand how today's developer uses the CLI ✅")
 	fmt.Println("> At the end of the survey, you can leave your email and we will send you the results. 📈")
-	// fmt.Println("> For more info on Denver, please check out https://denver.team 🕸️")
+	fmt.Println("> For more info on Denver, please check out https://denver.team 🕸️")
 	fmt.Println("\n> Code for the survey is open-source. Feel free to check it out to make sure it isn't doing anything fishy. 🐠")
 	fmt.Println("> https://github.com/zachlloyd/denver-survey-client")
 	fmt.Println("\n> Let's get started...")

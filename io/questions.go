@@ -194,7 +194,7 @@ var questionMap = map[QuestionID]Question{
 			"Better session and window management (e.g. built in Tmux functionality)"}},
 	biggestPainPoint: {ID: biggestPainPoint, Text: "What's your biggest pain point working in the command-line?",
 		Type: FreeForm},
-	payFor: {ID: payFor, Text: "Is there an improvement to the command-line you would pay $10 / mo for?  If so, please tell us about it.",
+	payFor: {ID: payFor, Text: "Is there an improvement to the command-line you would pay $10 a month for?  If so, please tell us about it.",
 		Type: FreeForm},
 	Email: {ID: Email, Text: "What's your email? Will only be used to send you survey results. [enter blank to skip]",
 		Type: FreeForm, Skippable: true},
