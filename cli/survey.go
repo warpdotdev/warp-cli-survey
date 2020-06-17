@@ -20,7 +20,7 @@ func main() {
 
 	rollbar.SetToken("6754ea1d67794cc8b92d2855ac3a45db")
 	rollbar.SetEnvironment("production")
-	rollbar.SetCodeVersion("0.1.7")
+	rollbar.SetCodeVersion("0.1.8")
 	rollbar.SetServerRoot("github.com/zachlloyd/denver-survey-client")
 	rollbar.Info("Starting new survey...")
 

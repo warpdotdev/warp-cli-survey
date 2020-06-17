@@ -73,6 +73,7 @@ func Start(storage store.Storer, emailer *store.Emailer, respondentID string, hi
 							time.Sleep(40 * time.Millisecond)
 						}
 					}
+
 				}
 			}
 			fmt.Println()
@@ -207,23 +208,24 @@ func printHistoryRange(history *history.ShellHistory, start int, end int) {
 }
 
 func printQuestion(q io.Question) {
-	fmt.Print("> ", q.Text)
+	fgMagenta := color.New(color.FgMagenta)
+	fgMagenta.Print("> ", q.Text)
 
 	if q.Type == io.YesNo {
-		fmt.Print(" [Y / n]")
+		fgMagenta.Print(" [Y / n]")
 	}
 
 	fmt.Print("\n\n")
 	if q.Type == io.MultipleChoice || q.Type == io.File {
 		for j, v := range q.Values {
-			fmt.Println(color.GreenString(strconv.Itoa(j+1)), v)
+			fmt.Println(color.CyanString(strconv.Itoa(j+1)), v)
 		}
 
 		if q.Type == io.MultipleChoice {
 			endValue := len(q.Values)
 			if q.ShowOther {
 				endValue++
-				fmt.Println(color.GreenString(strconv.Itoa(endValue)), "Other")
+				fmt.Println(color.CyanString(strconv.Itoa(endValue)), "Other")
 			}
 			if q.MultiSelect {
 				fmt.Print("Please enter a number between 1 - ", endValue,
