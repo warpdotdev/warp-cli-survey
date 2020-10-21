@@ -1,18 +1,25 @@
 # tl; dr: To install and run
+It should take only 5-10 minutes.
 
-`curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey`
+Just run 
+```
+curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey
+```
 
-# What is Denver?
-Denver is reimagining the command-line terminal as a modern, collaborative app.  
+# How the survey looks like
+![Screenshot of survey](./survey_screenshot.gif)
 
-The core of Denver will be a new, open-source terminal.  It's not ready just yet.
+# What is Warp?
+Warp is re-imagining the command-line terminal as a modern, collaborative app.  
 
-You can sign up to follow progress at https://denver.team
+The core of Warp will be a new, open-source terminal. It's not ready just yet.
+
+You can sign up to follow progress at https://warp.dev
 
 # What is this code I'm about to run...
-This repo contains code for the Denver CLI survey.  The survey asks a number of questions about command-line usage (see below for full list).  The goal is to put together some concrete data to help drive product direction.
+This repo contains code for the Warp CLI survey.  The survey asks a number of questions about command-line usage (see below for full list).  The goal is to put together some concrete data to help drive product direction.
 
-You only should be running this if you have some connection to Denver or someone you trust asked you to fill it out.
+You only should be running this if you have some connection to Warp or someone you trust asked you to fill it out.
 
 It's open source so that you can look at the code yourself and make sure we aren't doing anything fishy 🐠
 
@@ -20,7 +27,7 @@ We will keep this data confidential, but will share an aggregate data set once w
 
 By filling it out, you are helping us build a better product, and we very much appreciate that.
 
-If you want more info, please email zach@denver.team
+If you want more info, please email zach@warp.dev
 
 # What personal info does it collect?
 Only what you tell us.

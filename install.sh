@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Denver Survey installer
+# Warp Survey installer
 #
 # Usage:
 #   curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey
@@ -21,7 +21,7 @@ function run_denver_survey() {
       chmod +x /tmp/dsurvey
   else
       set +x
-      echo "The Denver Survey installer does not currently work for your platform: $OS"
+      echo "The Warp Survey installer does not currently work for your platform: $OS"
       echo "Please let me know at zachlloyd@gmail.com"
       exit 1
   fi

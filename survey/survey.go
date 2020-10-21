@@ -35,12 +35,12 @@ var positives = []string{
 // Start runs the survey and writes responses to the storer
 // historyFilePath is an optional argument specifying a history file to read
 func Start(storage store.Storer, emailer *store.Emailer, respondentID string, historyFilePath *string) {
-	fmt.Println("\n> Welcome to the Project Denver survey! 👋")
+	fmt.Println("\n> Welcome to the Warp survey! 👋")
 	fmt.Println("> This should take no more than 5-10 minutes. ⏲")
-	fmt.Println("\n> At Denver we are building a modern, collaborative command-line terminal for all developers.")
+	fmt.Println("\n> At Warp we are building a modern, collaborative command-line terminal for all developers.")
 	fmt.Println("> The goal of the survey is to better understand how today's developer uses the CLI ✅")
 	fmt.Println("> At the end of the survey, you can leave your email and we will send you the results. 📈")
-	fmt.Println("> For more info on Denver, please check out https://denver.team 🕸️")
+	fmt.Println("> For more info on Warp, please check out https://warp.dev 🕸️")
 	fmt.Println("\n> Code for the survey is open-source. Feel free to check it out to make sure it isn't doing anything fishy. 🐠")
 	fmt.Println("> https://github.com/zachlloyd/denver-survey-client")
 	fmt.Println("\n> Let's get started...")
@@ -87,7 +87,7 @@ func Start(storage store.Storer, emailer *store.Emailer, respondentID string, hi
 	}
 	// fmt.Println(summary)
 
-	fmt.Println("\n If you're interested in joining our slack or contributing to the project, please reach out to zach@denver.team")
+	fmt.Println("\n If you're interested in joining our slack or contributing to the project, please reach out to zach@warp.dev")
 	fmt.Println("\n🙏  That's it, thanks for taking the time! 🙏")
 }
 

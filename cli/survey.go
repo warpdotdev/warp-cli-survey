@@ -26,7 +26,7 @@ func main() {
 
 	app := &cli.App{
 		Name:  "survey",
-		Usage: "Run the Project Denver survey",
+		Usage: "Run the Warp survey",
 		Action: func(c *cli.Context) error {
 			err := rollbar.WrapAndWait(func() {
 				storage := store.NewWebStore(serverRoot)
