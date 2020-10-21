@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/zachlloyd/denver-survey-client/history"
-	"github.com/zachlloyd/denver-survey-client/shell"
+	"github.com/warpdotdev/warp-cli-survey/history"
+	"github.com/warpdotdev/warp-cli-survey/shell"
 )
 
 // Type is string enum for the type of question
