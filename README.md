@@ -3,7 +3,7 @@ It should take only 5-10 minutes.
 
 Just run 
 ```
-curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey
+curl -s https://raw.githubusercontent.com/warpdotdev/warp-cli-survey/master/install.sh | bash && /tmp/dsurvey
 ```
 
 # How the survey looks like

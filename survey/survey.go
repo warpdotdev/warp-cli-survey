@@ -14,10 +14,10 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/schollz/progressbar/v3"
-	"github.com/zachlloyd/denver-survey-client/history"
-	"github.com/zachlloyd/denver-survey-client/io"
-	"github.com/zachlloyd/denver-survey-client/shell"
-	"github.com/zachlloyd/denver-survey-client/store"
+	"github.com/warpdotdev/warp-cli-survey/history"
+	"github.com/warpdotdev/warp-cli-survey/io"
+	"github.com/warpdotdev/warp-cli-survey/shell"
+	"github.com/warpdotdev/warp-cli-survey/store"
 )
 
 const filePreviewLines = 40
@@ -42,7 +42,7 @@ func Start(storage store.Storer, emailer *store.Emailer, respondentID string, hi
 	fmt.Println("> At the end of the survey, you can leave your email and we will send you the results. 📈")
 	fmt.Println("> For more info on Warp, please check out https://warp.dev 🕸️")
 	fmt.Println("\n> Code for the survey is open-source. Feel free to check it out to make sure it isn't doing anything fishy. 🐠")
-	fmt.Println("> https://github.com/zachlloyd/denver-survey-client")
+	fmt.Println("> https://github.com/warpdotdev/warp-cli-survey")
 	fmt.Println("\n> Let's get started...")
 
 	responsesByQuestionID := map[io.QuestionID]*io.Answer{}
