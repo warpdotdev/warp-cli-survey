@@ -1,6 +1,9 @@
 # tl; dr: To install and run
 
-`curl -s https://raw.githubusercontent.com/zachlloyd/denver-survey-client/master/install.sh | bash && /tmp/dsurvey`
+Just run 
+```
+curl -s https://raw.githubusercontent.com/warpdotdev/denver-survey-client/master/install.sh | bash && /tmp/dsurvey
+```
 
 # What is Denver?
 Denver is reimagining the command-line terminal as a modern, collaborative app.  

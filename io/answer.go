@@ -1,8 +1,8 @@
 package io
 
 import (
-	"github.com/zachlloyd/denver-survey-client/history"
-	"github.com/zachlloyd/denver-survey-client/store"
+	"github.com/warpdotdev/denver-survey-client/history"
+	"github.com/warpdotdev/denver-survey-client/store"
 )
 
 // Answer is a model of the user's response to a question
