@@ -2,7 +2,7 @@
 
 Just run 
 ```
-curl -s https://raw.githubusercontent.com/warpdotdev/denver-survey-client/master/install.sh | bash && /tmp/dsurvey
+curl -s https://raw.githubusercontent.com/warpdotdev/warp-cli-survey/master/install.sh | bash && /tmp/dsurvey
 ```
 
 # What is Denver?

@@ -3,7 +3,7 @@ package store
 import (
 	"time"
 
-	"github.com/warpdotdev/denver-survey-client/shell"
+	"github.com/warpdotdev/warp-cli-survey/shell"
 )
 
 // Response is an answer to a single question

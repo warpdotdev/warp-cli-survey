@@ -1,4 +1,4 @@
-module github.com/warpdotdev/denver-survey-client
+module github.com/warpdotdev/warp-cli-survey
 
 go 1.14
 

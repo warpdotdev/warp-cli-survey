@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/warpdotdev/denver-survey-client/shell"
+	"github.com/warpdotdev/warp-cli-survey/shell"
 )
 
 func TestRedactCommandNoArgs(t *testing.T) {

@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/rollbar/rollbar-go"
 	"github.com/urfave/cli"
-	"github.com/warpdotdev/denver-survey-client/store"
-	"github.com/warpdotdev/denver-survey-client/survey"
+	"github.com/warpdotdev/warp-cli-survey/store"
+	"github.com/warpdotdev/warp-cli-survey/survey"
 )
 
 const surveyMasterURL = "https://server-master-zonhtougpa-uc.a.run.app"
@@ -21,7 +21,7 @@ func main() {
 	rollbar.SetToken("6754ea1d67794cc8b92d2855ac3a45db")
 	rollbar.SetEnvironment("production")
 	rollbar.SetCodeVersion("0.2.0")
-	rollbar.SetServerRoot("github.com/warpdotdev/denver-survey-client")
+	rollbar.SetServerRoot("github.com/warpdotdev/warp-cli-survey")
 	rollbar.Info("Starting new survey...")
 
 	app := &cli.App{

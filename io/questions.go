@@ -3,8 +3,8 @@ package io
 import (
 	"os"
 
-	"github.com/warpdotdev/denver-survey-client/history"
-	"github.com/warpdotdev/denver-survey-client/shell"
+	"github.com/warpdotdev/warp-cli-survey/history"
+	"github.com/warpdotdev/warp-cli-survey/shell"
 )
 
 // QuestionID is a human readable unique question id.
