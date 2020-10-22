@@ -6,7 +6,7 @@ Just run
 curl -s https://raw.githubusercontent.com/warpdotdev/warp-cli-survey/master/install.sh | bash && /tmp/dsurvey
 ```
 
-# How the survey looks like
+# Here's what the survey looks like
 ![Screenshot of survey](./survey_screenshot.gif)
 
 # What is Warp?
