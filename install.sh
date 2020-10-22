@@ -5,7 +5,7 @@
 # Usage:
 #   curl -s https://raw.githubusercontent.com/warpdotdev/warp-cli-survey/master/install.sh | bash && /tmp/dsurvey
 
-VERSION="0.2.0"
+VERSION="0.2.1"
 
 set -e
 

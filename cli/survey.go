@@ -20,7 +20,7 @@ func main() {
 
 	rollbar.SetToken("6754ea1d67794cc8b92d2855ac3a45db")
 	rollbar.SetEnvironment("production")
-	rollbar.SetCodeVersion("0.2.0")
+	rollbar.SetCodeVersion("0.2.1")
 	rollbar.SetServerRoot("github.com/warpdotdev/warp-cli-survey")
 	rollbar.Info("Starting new survey...")
 
