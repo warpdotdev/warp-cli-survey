@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Builds the Denver client survey tar archives for release
+# Builds the Warp client survey tar archives for release
 
 VERSION=0.2.0
 

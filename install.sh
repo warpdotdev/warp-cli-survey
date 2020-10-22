@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Denver Survey installer
+# Warp Survey installer
 #
 # Usage:
 #   curl -s https://raw.githubusercontent.com/warpdotdev/warp-cli-survey/master/install.sh | bash && /tmp/dsurvey
